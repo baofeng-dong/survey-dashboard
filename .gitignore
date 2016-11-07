@@ -1,0 +1,7 @@
+*.pyc
+*.*~
+*.swp
+env/
+config.py
+env2/
+static/image/*.svg

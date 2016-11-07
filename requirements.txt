@@ -1,0 +1,8 @@
+flask
+sqlalchemy
+flask-sqlalchemy
+flask-bootstrap
+psycopg2
+requests
+pygal
+
