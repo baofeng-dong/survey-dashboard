@@ -4,4 +4,4 @@ Please see the file COPYING in the source
 distribution of this software for license terms.
 Many thanks to Jeffery Meyers for his great help
 
-A flask web application to display 2016 spring fare survey results
+A flask web application to display 2016 fall on-board survey results
