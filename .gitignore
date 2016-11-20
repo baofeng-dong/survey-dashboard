@@ -2,6 +2,7 @@
 *.*~
 *.swp
 env/
+sql/
 config.py
 env2/
 static/image/*.svg
