@@ -112,7 +112,7 @@ class Helper(object):
                 r.rte_desc,
                 r.dir_desc, 
                 f._date, 
-                f._end as _time, 
+                date_trunc('second',f._end) as _time, 
                 s.name as user, 
                 case
                     when q1_satisfaction = '1' then 'Very satisfied'
