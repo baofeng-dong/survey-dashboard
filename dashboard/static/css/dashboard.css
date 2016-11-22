@@ -68,37 +68,8 @@ body {
 
 .scrollable-menu {
     height: auto;
-    max-height: 200px;
+    max-height: 300px;
     overflow-x: hidden;
-}
-
-.status-1  {
-    /*background:#DB5555;*/
-    background-color:rgba(219,85,85,0.6);
-
-}
-.status-2  {
-    /*background:#D4A246;*/
-    background-color:rgba(212,162,70,0.6);
-
-}
-.status-3  {
-    /*background:#CCFF33;*/
-    background-color:rgba(204,255,51,0.6);
-
-}
-.status-4  {
-    /*background:#A1ED44;*/
-    background-color:rgba(161,237,68,0.6);
-
-}
-.status-complete  {
-    /*background:#76DB55;*/
-    background-color:rgba(118,219,85,0.6);
-}
-.status-none  {
-    /*background:#76DB55;*/
-    background-color:rgba(219,217,217,0.6);
 }
 
 .tbl-header {
@@ -155,17 +126,30 @@ body {
     text-shadow: 0 0 3px black;
 }
 
-.quotas-table {  
+#menu-dd {
+  margin-top: 20px;
+  text-align: left;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+#select-group {
+    margin-left: 10px;
+    margin-top: 20px;
+    height: 120px;
 
 }
 
-.quotas-table th{  
-    padding:5px;
-    border:1;
+#download-button, #data-intro {
+    margin:10px;
 }
 
-.quotas-table td{  
-    padding:5px;
+#data-div {
+    margin:10px;
+    max-width: 1300px;
+    width: auto;
 }
 
-
+th {
+    align:center;
+}

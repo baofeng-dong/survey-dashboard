@@ -8,11 +8,16 @@
 
 {% block content %}
 
+<div id="data-intro">
+    <h4><b>Survey Data Dashboard</b></h4>
+    <p>Note: View the latest 300 survey submissions by route, direction or surveyor</p>
+
+</div>
 
 <!-- dropdowns that trigger ajax call to update table based on selection -->
-<div style="margin:2px">
-<table>
-  <tr>
+<div id="select-group">
+<table height="100%">
+  <tr id="menu-dd">
     <td style="padding-right:1em">
       <strong>Route:</strong>
     </td>
@@ -32,7 +37,7 @@
       </div>
     </td>
   </tr>
-  <tr>
+  <tr id="menu-dd">
   <td class="direction_cls" style="padding-right:1em; display:none">
     <strong>Direction:</strong>
   </td>
@@ -51,7 +56,7 @@
       </div>
     </td>
   </tr>
-  <tr>
+  <tr id="menu-dd">
     <td style="padding-right:1em;">
       <strong >Surveyor:</strong>
     </td>
@@ -73,7 +78,7 @@
   </tr>
 </table>
 </div>
-<div style="margin:2px; margin-top:10px">
+<div id="download-button">
 <table>
   <tr>
     <td>
@@ -87,13 +92,13 @@
 </table>
 </div>
 <!-- table that has body populated by ajax call -->
-<div style="margin:2px; margin-top:10px">
+<div id="data-div">
 <div class="table-responsive panel panel-default">
   <table class="table table-striped">
     <thead id="thead">
       <tr>
         {% for header in headers %}
-        <th>{{ header }}</th>
+        <th align="center">{{ header }}</th>
         {% endfor %}
       </tr>
   </thead>
