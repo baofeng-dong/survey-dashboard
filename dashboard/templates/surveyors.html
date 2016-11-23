@@ -8,7 +8,14 @@
 
 {% block content %}
 
-<div style="margin:10px">
+
+<div id="surveyor-intro">
+  <h4><b>Survey Daily Summary</b></h4>
+  <p>Note: Select a date to view daily survey summary.</p>
+
+</div>
+
+<div id="select-date">
 <table>
   <tr>
     <td style="padding-right:1em">
@@ -37,6 +44,14 @@
   </table>
 </div>
 
+
+<div id="line-chart" style="display:none">
+
+</div>
+
+<script>
+    var base = '{{url_for('index')}}';
+</script>
 
 <script type="text/javascript" src="{{ url_for('index') }}static/js/surveyors.js"></script>
 
