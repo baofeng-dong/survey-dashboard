@@ -74,7 +74,7 @@ def data_query():
 
     return jsonify(data=response)
 
-"""
+
 @app.route('/surveyors')
 def surveyor_status():
     return render_template('surveyors.html')
@@ -83,13 +83,15 @@ def surveyor_status():
 @app.route('/surveyors/_summary', methods=['GET'])
 def surveyor_summary_query():
     response = []
-    date = time.strftime("%d-%m-%Y")
-
+    date = time.strftime("%Y-%m-%d")
+    debug(request.args)
+    debug(request.args['date'])
     if 'date' in request.args.keys():
         date = request.args['date'].strip()
-
-    response = Helper.current_users(date)
+    debug(date)
+    debug(type(date))
+    response = Helper.get_user_data(date)
     debug(response)
-    return jsonify(users=response)"""
+    return jsonify(data=response)
 
 

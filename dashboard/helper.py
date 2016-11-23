@@ -5,22 +5,14 @@
 
 
 import csv, os
-
 from sqlalchemy import func, desc, distinct, cast, Integer
-from flask import current_app
+from flask import current_app, jsonify
 
 from dashboard import Session as Session
 from dashboard import debug, app, db
 import simplejson as json
 
 app = current_app
-
-GREEN_STATUS = '#76DB55'
-RED_STATUS = '#DB5555'
-INBOUND = '1'
-OUTBOUND = '0'
-DIRECTION = {'1':'Inbound', '0':'Outbound'}
-TRAINS = ['90','100', '190','200','290']
 
 
 class Helper(object):
@@ -191,6 +183,32 @@ class Helper(object):
 
         session.close()
         return users
+
+
+    @staticmethod
+    def get_user_data(date):
+
+        surveyordata = []
+
+        web_session = Session()
+        results = web_session.execute("""
+            select 
+                name, 
+                string_agg(distinct route, ' || ') as routes, 
+                count(route) as count,
+                round(count(route)*100/(select count(*) from odk.users_tod where _date=:date)::numeric,2) as pct
+            from odk.users_tod
+                where _date=:date
+                group by name
+                order by name;""",{'date':date})
+
+        for result in results:
+            print(result[0],result[1],result[2],result[3])
+            surveyordata.append([result[0],result[1],int(result[2]),float(result[3])])
+
+        web_session.close() 
+        debug(surveyordata)
+        return surveyordata
 
 
 
