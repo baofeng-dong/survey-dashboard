@@ -11,9 +11,11 @@ from flask import current_app, jsonify
 from dashboard import Session as Session
 from dashboard import debug, app, db
 import simplejson as json
+import pygal
 
 app = current_app
 
+DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
 class Helper(object):
 
@@ -190,6 +192,10 @@ class Helper(object):
 
         surveyordata = []
 
+        bar_chart = pygal.HorizontalBar(print_values=True)
+
+        bar_chart.title = 'Number of Surveys by Surveyor on {0}'.format(date)
+
         web_session = Session()
         results = web_session.execute("""
             select 
@@ -200,14 +206,17 @@ class Helper(object):
             from odk.users_tod
                 where _date=:date
                 group by name
-                order by name;""",{'date':date})
+                order by count desc;""",{'date':date})
 
         for result in results:
             print(result[0],result[1],result[2],result[3])
             surveyordata.append([result[0],result[1],int(result[2]),float(result[3])])
+            bar_chart.add(result[0],int(result[2]))
 
         web_session.close() 
         debug(surveyordata)
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('surveyors-', date)))
+
         return surveyordata
 
 
