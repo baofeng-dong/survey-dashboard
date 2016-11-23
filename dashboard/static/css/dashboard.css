@@ -117,15 +117,6 @@ body {
 }
 
 
-.off-label td {
-    line-height:0;
-    text-align: center;
-    font-size:10;
-    color:#D2D4EF;
-    font-weight:bold;
-    text-shadow: 0 0 3px black;
-}
-
 #menu-dd {
   margin-top: 20px;
   text-align: left;
@@ -134,18 +125,25 @@ body {
 }
 
 #select-group {
-    margin-left: 10px;
+    margin-left: 20px;
     margin-top: 20px;
     height: 120px;
 
 }
 
-#download-button, #data-intro {
-    margin:10px;
+#data-intro, #surveyor-intro {
+    margin-left: 20px;
+    margin-top:20px;
 }
 
-#data-div {
-    margin:10px;
+#download-button, #select-date {
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+#data-div, #surveyors, #line-chart {
+    margin-top: 10px;
+    margin-left: 20px;
     max-width: 1300px;
     width: auto;
 }
