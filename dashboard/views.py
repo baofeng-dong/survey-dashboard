@@ -24,6 +24,9 @@ from dashboard import app
 def index():
     return render_template('index.html')
 
+@app.route('/introduction')
+def intro():
+    return render_template("introduction.html")
 
 @app.route('/data')
 def data():
