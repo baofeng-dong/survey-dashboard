@@ -28,10 +28,15 @@ def index():
 def intro():
     return render_template("introduction.html")
 
+@app.route('/map')
+def map():
+
+    return render_template("map.html")
+
 @app.route('/data')
 def data():
     """Sets up table headers and dropdowns in template"""
-    headers = ['Date', 'Time', 'User', 'Route', 'Direction', 'Satisfaction', 'Comments']
+    headers = ['Date', 'Time', 'Surveyor', 'Route', 'Direction', 'Satisfaction', 'Comments']
     routes = [ route['rte_desc'] for route in Helper.get_routes() ]
     directions = Helper.get_directions()
     users = Helper.get_users()
