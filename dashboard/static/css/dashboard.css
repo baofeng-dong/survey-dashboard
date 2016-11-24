@@ -141,10 +141,17 @@ body {
     margin-left: 20px;
 }
 
-#data-div, #surveyors, #line-chart, #survey-intro, #intro-overview, #intro-questions, #intro-contact {
+#data-div, #survey-intro, #intro-overview, #intro-questions, #intro-contact {
     margin-top: 20px;
     margin-left: 20px;
     max-width: 1300px;
+    width: auto;
+}
+
+#surveyors, #line-chart {
+    margin-top: 20px;
+    margin-left: 20px;
+    max-width: 900px;
     width: auto;
 }
 
