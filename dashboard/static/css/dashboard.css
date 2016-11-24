@@ -141,13 +141,24 @@ body {
     margin-left: 20px;
 }
 
-#data-div, #surveyors, #line-chart {
-    margin-top: 10px;
+#data-div, #surveyors, #line-chart, #survey-intro, #intro-overview, #intro-questions, #intro-contact {
+    margin-top: 20px;
     margin-left: 20px;
     max-width: 1300px;
     width: auto;
 }
 
+#message {
+    margin-top: 60px;
+    margin-left: 40px;
+}
+
+#index-content {
+    margin-top: 40px;
+    margin-left: 30px;
+}
+
 th {
     align:center;
 }
+
