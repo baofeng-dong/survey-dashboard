@@ -3,12 +3,71 @@
 
 {% block content %}
 
+<div id="data-intro">
+    <h4><b>Map Dashboard</b></h4>
+    <p>Note: select route, direction to view origin and destination data.</p>
+
+</div>
+
+<!-- dropdowns that trigger ajax call to update table based on selection -->
+<div id="map-select">
+<table height="100%">
+  <tr id="menu-dd">
+    <td style="padding-right:1em">
+      <strong>Route:</strong>
+    </td>
+    <td>
+      <div class="btn-group" role="form">
+        <button id="line_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        All    <span class="caret"></span>
+        </button>
+        <ul id="filter_line" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Route</li>
+          <li role="presentation"><a href="#">All</a></li>
+          <li role="presentation" class="divider"></li>
+          {% for route in routes %}
+          <li><a href="#">{{ route }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </td>
+  </tr>
+  <tr id="menu-dd">
+  <td class="direction_cls" style="padding-right:1em; display:none">
+    <strong>Direction:</strong>
+  </td>
+    <td class="direction_cls" style="display: none;">
+      <div class="btn-group">
+        <button id="dir_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        All    <span class="caret"></span>
+        </button>
+        <ul id="filter_dir" class="dropdown-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Direction</li>
+          <li role="presentation"><a href="#">All</a></li>
+          <li role="presentation" class="divider"></li>
+          <li><a href="#" id="inbound_link"></a></li>
+          <li><a href="#" id="outbound_link"></a></li>
+        </ul>
+      </div>
+    </td>
+  </tr>
+</table>
+</div>
+
 
 
 <div id="mapid">
     
 </div>
 
+<script>
+    //convert ordered directions data by rte and desc
+    //into lookup object
+    //{rte_desc:{0:<outbound dir_desc>, 1:<inbound dir_desc>}, ... }
+    var directions = {{ directions|tojson|safe }};
+    console.log(directions);
+
+</script>
 
 
 <script type="text/javascript" src="{{ url_for('index') }}static/js/map.js"></script>
