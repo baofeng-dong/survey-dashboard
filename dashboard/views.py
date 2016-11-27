@@ -30,8 +30,32 @@ def intro():
 
 @app.route('/map')
 def map():
+    routes = [ route['rte_desc'] for route in Helper.get_routes() ]
+    directions = Helper.get_directions()
 
-    return render_template("map.html")
+    return render_template("map.html",
+        routes=routes,directions=directions)
+
+
+
+@app.route('/map/_query', methods=['GET'])
+def map_query():
+    response = []
+    rte_desc = ""
+    dir_desc = ""
+
+
+    if 'rte_desc' in request.args.keys():
+        rte_desc = request.args['rte_desc'].strip()
+        debug(rte_desc)
+    if 'dir_desc' in request.args.keys():
+        dir_desc = request.args['dir_desc'].strip()
+        debug(dir_desc)
+    response = Helper.query_map_data(rte_desc=rte_desc,
+        dir_desc=dir_desc)
+
+    return jsonify(data=response)
+
 
 @app.route('/data')
 def data():

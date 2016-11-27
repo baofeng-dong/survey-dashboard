@@ -58,7 +58,121 @@ class Helper(object):
         return ret_val
 
 
+    @staticmethod
+    def query_map_data(rte_desc='', dir_desc=''):
+        ret_val = []
+        query_args = {}
+        where = ""
 
+        rte_desc_filter = " r.rte_desc = :rte_desc "
+        dir_desc_filter = " r.dir_desc = :dir_desc "
+        
+        def construct_where(string, param, filt_name):
+            if not param:
+                return string
+
+            if filt_name == "rte_desc": filt = rte_desc_filter
+            else: filt = dir_desc_filter
+
+            if string:
+                return string + " AND " + filt
+            else:
+                return string + filt
+      
+        # build where clause
+        debug(where)
+        for param in [(rte_desc, 'rte_desc'),(dir_desc, 'dir_desc')]:
+            where = construct_where(where, param[0], param[1])
+            debug(where)
+            debug(param[0])
+            debug(param[1])
+            query_args[param[1]] = param[0]
+            debug(query_args)
+        if where:
+            where = " WHERE " + where
+        region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
+        validate = " AND f.loc_validated='1' "
+        not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
+        limit = "limit 300;"
+
+        query_string = """
+            select 
+                f.rte,
+                r.rte_desc,
+                f.dir,
+                r.dir_desc,
+                case
+                    when q3_orig_type = '1' then 'Home'
+                    when q3_orig_type = '2' then 'Work'
+                    when q3_orig_type = '3' then 'School'
+                    when q3_orig_type = '4' then 'Recreation'
+                    when q3_orig_type = '5' then 'Shopping'
+                    when q3_orig_type = '6' then 'Personal business'
+                    when q3_orig_type = '7' then 'Visit family or friends'
+                    when q3_orig_type = '8' then 'Medical appointment'
+                    when q3_orig_type = '1' then 'Other'
+                end as o_type,
+                case
+                    when q4_dest_type = '1' then 'Home'
+                    when q4_dest_type = '2' then 'Work'
+                    when q4_dest_type = '3' then 'School'
+                    when q4_dest_type = '4' then 'Recreation'
+                    when q4_dest_type = '5' then 'Shopping'
+                    when q4_dest_type = '6' then 'Personal business'
+                    when q4_dest_type = '7' then 'Visit family or friends'
+                    when q4_dest_type = '8' then 'Medical appointment'
+                    when q4_dest_type = '9' then 'Other'
+                end as d_type,
+                f.q5_orig_lat as o_lat,
+                f.q5_orig_lng as o_lng,
+                f.q6_dest_lat as d_lat,
+                f.q6_dest_lng as d_lng
+            from odk.fall_survey_2016_view f
+                join odk.rte_lookup r
+                on f.rte::integer = r.rte and f.dir::integer = r.dir """
+
+        query_string += where
+        query_string += region
+        query_string += validate
+        query_string += not_null
+        query_string += limit
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string, query_args)
+
+        RTE = 0
+        RTE_DESC = 1
+        DIR = 2
+        DIR_DESC = 3
+        OTYPE = 4
+        DTYPE =5
+        OLAT = 6
+        OLNG = 7
+        DLAT = 8
+        DLNG = 9
+
+
+        # each record will be converted as json
+        # and sent back to page
+        for record in query:
+
+            data = {}
+            data['rte'] = record[RTE]
+            data['rte_desc'] = record[RTE_DESC]
+            data['dir'] = record[DIR]
+            data['dir_desc'] = record[DIR_DESC]
+            data['o_type'] = record[OTYPE]
+            data['d_type'] = record[DTYPE]
+            data['o_lat'] = float(record[OLAT])
+            data['o_lng'] = float(record[OLNG])
+            data['d_lat'] = float(record[DLAT])
+            data['d_lng'] = float(record[DLNG])
+
+            ret_val.append(data)
+        web_session.close()
+        return ret_val
 
     @staticmethod
     def query_route_data(user='', rte_desc='', dir_desc='', csv=False):
