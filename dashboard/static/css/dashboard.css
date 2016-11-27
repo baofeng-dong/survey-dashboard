@@ -131,6 +131,12 @@ body {
 
 }
 
+#map-select {
+    margin-left: 20px;
+    margin-top: 20px;
+    height: 80px;
+}
+
 #data-intro, #surveyor-intro {
     margin-left: 20px;
     margin-top:20px;
@@ -168,7 +174,7 @@ body {
 #mapid {
   width: 100%;
   height: 700px;
-  margin-top: 80px;
+  margin-top: 20px;
   }
 
 th {
