@@ -79,9 +79,7 @@ $(document).ready(function() {
                     fillOpacity: 0.6
                 }).bindPopup(orig_popup, {showOnMouseOver:true});
 
-                origMarkersLayer.addLayer(orig_marker, {
-                    style:style
-                })
+                origMarkersLayer.addLayer(orig_marker);
 
                 // add origMarkersLayer to mymap
                 origMarkersLayer.addTo(mymap);
