@@ -30,23 +30,25 @@ $(document).ready(function() {
 
 
     function rebuild(args) {
+        //clear previous orig and dest markers
         origMarkersLayer.clearLayers();
         destMarkersLayer.clearLayers();
 
         console.log(args);
+
         $.getJSON('map/_query', args, function(data) {
 
             //retrive origin and destination lat and lng
-            // and add the marker to mymap
+
             console.log(data);
 
             $(data.data).each(function(index, item) {
-                // origin lat and long
+                // get origin lat and long from data.data json
                 var o_lat = item.o_lat;
                 console.log("o_lat: " + o_lat);
                 var o_lng = item.o_lng;
                 console.log("o_lng: " + o_lng);
-                // destination lat and long
+                // get destination lat and long
                 var d_lat = item.d_lat;
                 console.log("d_lat: " + d_lat);
                 var d_lng = item.d_lng;
@@ -64,25 +66,47 @@ $(document).ready(function() {
                     "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
                     "<b>Destination Type:</b>" + " " + item.d_type);
 
-                // add origin marker to mymap
-                var orig_marker = L.marker([o_lat,o_lng], {
-                    clickable: true
+
+                // add origin marker to origMarkersLayer
+                var olatlng = L.latLng([o_lat,o_lng]);
+
+                var orig_marker = L.circleMarker(olatlng, {
+                    clickable: true,
+                    fillColor: "#259CEF",
+                    radius: 10,
+                    weight: 1,
+                    opacity: 0.2,
+                    fillOpacity: 0.6
                 }).bindPopup(orig_popup, {showOnMouseOver:true});
-                origMarkersLayer.addLayer(orig_marker);
+
+                origMarkersLayer.addLayer(orig_marker, {
+                    style:style
+                })
+
+                // add origMarkersLayer to mymap
                 origMarkersLayer.addTo(mymap);
 
                 // add destination marker to mymap
-                var dest_marker = L.marker([d_lat,d_lng], {
-                    clickable: true
+                var dlatlng = L.latLng([d_lat,d_lng]);
+
+                var dest_marker = L.circleMarker(dlatlng, {
+                    clickable: true,
+                    fillColor: "#4BF01B",
+                    radius: 10,
+                    weight: 1,
+                    opacity: 0.2,
+                    fillOpacity: 0.6
                 }).bindPopup(dest_popup, {showOnMouseOver:true});
+
                 destMarkersLayer.addLayer(dest_marker);
+                // add destMarkersLayer to mymap
                 destMarkersLayer.addTo(mymap);
             });
 
         });
     }
 
-    //build table on initial page load with no filter params
+    //load map with markers on initial page load with no filter params
     rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
 
     $('#filter_line a').on('click', function() {
@@ -116,3 +140,26 @@ $(document).ready(function() {
         if (sel_dir == 'All') sel_dir = '';
         rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
     });
+
+/*function getTypeColor(loctype) {
+ return loctype = 'Home' ? '#CE71EC' :
+        loctype = 'Work' ? '#EE843A' :
+        loctype = 'School' ? '#6EEE3F' :
+        loctype = 'Recreation' ? '#45C9F3' :
+        loctype = 'Shopping' ? '#F345D6' :
+        loctype = 'Personal business' ? '#7ECFEE' :
+        loctype = 'Visit family or friends' ? '#7E8AEE' :
+        loctype = 'Medical appointment' ? '#E7EC89' :
+        loctype = 'Other' ? '#71716D' :
+                   '#80ff00';
+}
+
+function style(feature) {
+    return {
+                    fillColor: getTypeColor(feature["o_type"]),
+                    weight: 1,
+                    opacity: 0.0,
+                    fillOpacity: 0.4
+
+    }
+}*/
