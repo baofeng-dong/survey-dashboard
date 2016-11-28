@@ -96,26 +96,6 @@ body {
     margin:0px;
 }
 
-.pie-marker {   
-}
-
-.off-label {  
-    background-color:rgba(0,0,0,0.2);
-    width:30px;
-    height:30px;
-    border-radius: 10px;
-}
-
-.off-label table {  
-    border-collapse:collapse;
-    width:100%;
-    height:100%;
-}
-
-.active-dir {
-    background-color:rgba(0,0,0,0.2);
-}
-
 
 #menu-dd {
   margin-top: 20px;
@@ -180,4 +160,8 @@ body {
 th {
     align:center;
 }
+
+.fa {
+    font-family: FontAwesome;
+    } 
 
