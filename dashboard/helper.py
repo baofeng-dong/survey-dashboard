@@ -93,7 +93,7 @@ class Helper(object):
         region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
         validate = " AND f.loc_validated='1' "
         not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
-        limit = "limit 300;"
+        limit = "limit 1000;"
 
         query_string = """
             select 
