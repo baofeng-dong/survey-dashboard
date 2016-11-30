@@ -28,9 +28,9 @@ def index():
 def intro():
     return render_template("introduction.html")
 
-@app.route('/fallresults')
+@app.route('/results')
 def result():
-    return "The page will be built once the Fall 2016 On-board survey is complete! Please click the back button to return to the previous page."
+    return render_template("results.html")
 
 @app.route('/map')
 def map():
