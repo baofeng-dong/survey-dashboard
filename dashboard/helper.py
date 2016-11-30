@@ -34,7 +34,7 @@ class Helper(object):
         ret_val = [ {'rte':str(route[RTE]), 'rte_desc':route[RTE_DESC]}
             for route in routes ]
         web_session.close()
-        
+        debug(ret_val)
         return ret_val
 
     @staticmethod
@@ -218,9 +218,9 @@ class Helper(object):
         query_string = """
             select 
                 r.rte_desc,
-                r.dir_desc, 
+                r.dir_desc,
                 f._date, 
-                date_trunc('second',f._end) as _time, 
+                date_trunc('second',f._end) as _time,
                 s.name as user, 
                 case
                     when q1_satisfaction = '1' then 'Very satisfied'
