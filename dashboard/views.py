@@ -37,7 +37,6 @@ def map():
         routes=routes,directions=directions)
 
 
-
 @app.route('/map/_query', methods=['GET'])
 def map_query():
     response = []
