@@ -28,6 +28,10 @@ def index():
 def intro():
     return render_template("introduction.html")
 
+@app.route('/fallresults')
+def result():
+    return "The page will be built once the Fall 2016 On-board survey is complete! Please click the back button to return to the previous page."
+
 @app.route('/map')
 def map():
     routes = [ route['rte_desc'] for route in Helper.get_routes() ]
