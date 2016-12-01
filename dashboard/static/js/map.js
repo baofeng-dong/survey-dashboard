@@ -45,14 +45,14 @@ $(document).ready(function() {
             $(data.data).each(function(index, item) {
                 // get origin lat and long from data.data json
                 var o_lat = item.o_lat;
-                console.log("o_lat: " + o_lat);
+                //console.log("o_lat: " + o_lat);
                 var o_lng = item.o_lng;
-                console.log("o_lng: " + o_lng);
+                //console.log("o_lng: " + o_lng);
                 // get destination lat and long
                 var d_lat = item.d_lat;
-                console.log("d_lat: " + d_lat);
+                //console.log("d_lat: " + d_lat);
                 var d_lng = item.d_lng;
-                console.log("d_lng: " + d_lng);
+                //console.log("d_lng: " + d_lng);
 
                 // defines popup content for orig markers
                 var orig_popup = L.popup().setLatLng([o_lat,o_lng]).setContent(
