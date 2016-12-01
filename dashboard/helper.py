@@ -224,11 +224,11 @@ class Helper(object):
                 s.name as user, 
                 case
                     when q1_satisfaction = '1' then 'Very satisfied'
-                    when q1_satisfaction = '2' then 'Somewhat satisfied'
-                    when q1_satisfaction = '3' then 'Neutral'
-                    when q1_satisfaction = '4' then 'Somewhat dissatisfied'
-                    when q1_satisfaction = '5' then 'Very dissatisfied'
-                    when q1_satisfaction = '6' then 'Do not know'
+                    when q1_satisfaction = '3' then 'Somewhat satisfied'
+                    when q1_satisfaction = '4' then 'Neutral'
+                    when q1_satisfaction = '5' then 'Somewhat dissatisfied'
+                    when q1_satisfaction = '6' then 'Very dissatisfied'
+                    when q1_satisfaction = '7' then 'Do not know'
                 end as satisfaction,
                 coalesce(f.q2_satis_comments,'')
             from odk.fall_survey_2016_view f
