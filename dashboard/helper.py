@@ -93,7 +93,7 @@ class Helper(object):
         region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
         validate = " AND f.loc_validated='1' "
         not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
-        #limit = "limit 1000;"
+        limit = "limit 2000;"
 
         query_string = """
             select 
@@ -110,7 +110,7 @@ class Helper(object):
                     when q3_orig_type = '6' then 'Personal business'
                     when q3_orig_type = '7' then 'Visit family or friends'
                     when q3_orig_type = '8' then 'Medical appointment'
-                    when q3_orig_type = '1' then 'Other'
+                    when q3_orig_type = '9' then 'Other'
                 end as o_type,
                 case
                     when q4_dest_type = '1' then 'Home'
@@ -135,7 +135,7 @@ class Helper(object):
         query_string += region
         query_string += validate
         query_string += not_null
-        #query_string += limit
+        query_string += limit
 
         debug(query_string)
 
