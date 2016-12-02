@@ -1,7 +1,15 @@
 
+    var sel_line = '';
+    var sel_dir = '';
+    var dir_lookup = {};
+    var rte_lookup = {};
+    var dir_num_lookup = {};
+    // creates layers for orig and dest markers
+    var origMarkersLayer = new L.LayerGroup();
+    var destMarkersLayer = new L.LayerGroup();
+    var hasLegend = false;
+
 //initialize map 
-
-
 $(document).ready(function() {
     mymap = L.map('mapid', {scrollWheelZoom:true}).setView([45.48661, -122.65343], 11);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidG11c2VyMTk3IiwiYSI6ImNpc254cHk1YTA1dngydm14bjkyamQ1NmsifQ.8ya7T1hHXtVmYOwMrVIuFw', {
@@ -10,99 +18,6 @@ $(document).ready(function() {
     maxZoom: 18,
     minZoom: 11
     }).addTo(mymap);
-
-})
-
-    //set when a route, direction or user is selected from dropdowns
-    var sel_line = '';
-    var sel_dir = '';
-    var dir_lookup = {};
-    // creates layers for orig and dest markers
-    var origMarkersLayer = new L.LayerGroup();
-    var destMarkersLayer = new L.LayerGroup();
-
-    $(directions).each(function(index, item) {
-        if(!dir_lookup.hasOwnProperty(item.rte_desc)) {
-            dir_lookup[item.rte_desc] = {};
-        }
-        dir_lookup[item.rte_desc][item.dir] = item.dir_desc;
-    });
-
-
-    function rebuild(args) {
-        //clear previous orig and dest markers
-        origMarkersLayer.clearLayers();
-        destMarkersLayer.clearLayers();
-
-        console.log(args);
-
-        $.getJSON('map/_query', args, function(data) {
-
-            //retrive origin and destination lat and lng
-
-            console.log(data);
-
-            $(data.data).each(function(index, item) {
-                // get origin lat and long from data.data json
-                var o_lat = item.o_lat;
-                //console.log("o_lat: " + o_lat);
-                var o_lng = item.o_lng;
-                //console.log("o_lng: " + o_lng);
-                // get destination lat and long
-                var d_lat = item.d_lat;
-                //console.log("d_lat: " + d_lat);
-                var d_lng = item.d_lng;
-                //console.log("d_lng: " + d_lng);
-
-                // defines popup content for orig markers
-                var orig_popup = L.popup().setLatLng([o_lat,o_lng]).setContent(
-                    "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
-                    "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
-                    "<b>Origin Type:</b>" + " " + item.o_type);
-
-                // defines popup content for destination markers
-                var dest_popup = L.popup().setLatLng([d_lat,d_lng]).setContent(
-                    "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
-                    "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
-                    "<b>Destination Type:</b>" + " " + item.d_type);
-
-
-                // add origin marker to origMarkersLayer
-                var olatlng = L.latLng([o_lat,o_lng]);
-
-                var orig_marker = L.circleMarker(olatlng, {
-                    clickable: true,
-                    fillColor: "#259CEF",
-                    radius: 10,
-                    weight: 1,
-                    opacity: 0.2,
-                    fillOpacity: 0.6
-                }).bindPopup(orig_popup, {showOnMouseOver:true});
-
-                origMarkersLayer.addLayer(orig_marker);
-
-                // add origMarkersLayer to mymap
-                origMarkersLayer.addTo(mymap);
-
-                // add destination marker to mymap
-                var dlatlng = L.latLng([d_lat,d_lng]);
-
-                var dest_marker = L.circleMarker(dlatlng, {
-                    clickable: true,
-                    fillColor: "#4BF01B",
-                    radius: 10,
-                    weight: 1,
-                    opacity: 0.2,
-                    fillOpacity: 0.6
-                }).bindPopup(dest_popup, {showOnMouseOver:true});
-
-                destMarkersLayer.addLayer(dest_marker);
-                // add destMarkersLayer to mymap
-                destMarkersLayer.addTo(mymap);
-            });
-
-        });
-    }
 
     //load map with markers on initial page load with no filter params
     rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
@@ -120,8 +35,12 @@ $(document).ready(function() {
         else {
             //update direction dropdown with correct names
             var dir = dir_lookup[this.text];
+            console.log(this.text);
+            console.log("dir_lookup: " + dir_lookup);
             $("#outbound_link").text(dir[0]+' ').show();
+            console.log(dir[0]);
             $("#inbound_link").text(dir[1]+' ').show();
+            console.log(dir[1]);
             $(".direction_cls").show();
         }
         
@@ -133,11 +52,158 @@ $(document).ready(function() {
 
     $('#filter_dir a').on('click', function() {
         sel_dir = this.text;
+        console.log("sel_dir: " + sel_dir);
         $("#dir_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         if (sel_dir == 'All') sel_dir = '';
         rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
+        console.log(sel_line,'\n',sel_dir);
     });
+
+})
+
+
+    //set when a route, direction or user is selected from dropdowns
+    $(directions).each(function(index, item) {
+        //console.log(directions);
+        if(!dir_lookup.hasOwnProperty(item.rte_desc)) {
+            dir_lookup[item.rte_desc] = {};
+        }
+        dir_lookup[item.rte_desc][item.dir] = item.dir_desc;
+        //console.log(dir_lookup);
+        // build route lookup dict based on rte_desc
+        if(!rte_lookup.hasOwnProperty(item.rte_desc)) {
+            rte_lookup[item.rte_desc] = {};
+        }
+        rte_lookup[item.rte_desc] = item.rte;
+
+        // build direction number lookup dict based on rte_desc and dir_desc
+        if(!dir_num_lookup.hasOwnProperty(item.rte_desc)) {
+            dir_num_lookup[item.rte_desc] = {};
+        }
+        dir_num_lookup[item.rte_desc][item.dir_desc] = item.dir;
+
+    });
+
+    //console.log(dir_lookup);
+
+    console.log(rte_lookup);
+
+    console.log(dir_num_lookup);
+
+
+function rebuild(args) {
+    //clear previous orig and dest markers
+    origMarkersLayer.clearLayers();
+    destMarkersLayer.clearLayers();
+
+    console.log(args);
+
+    $.getJSON('map/_query', args, function(data) {
+
+        //retrive origin and destination lat and lng
+
+        console.log(data);
+
+        $(data.data).each(function(index, item) {
+            // get origin lat and long from data.data json
+            var o_lat = item.o_lat;
+            //console.log("o_lat: " + o_lat);
+            var o_lng = item.o_lng;
+            //console.log("o_lng: " + o_lng);
+            // get destination lat and long
+            var d_lat = item.d_lat;
+            //console.log("d_lat: " + d_lat);
+            var d_lng = item.d_lng;
+            //console.log("d_lng: " + d_lng);
+
+            // defines popup content for orig markers
+            var orig_popup = L.popup().setLatLng([o_lat,o_lng]).setContent(
+                "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
+                "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
+                "<b>Origin Type:</b>" + " " + item.o_type);
+
+            // defines popup content for destination markers
+            var dest_popup = L.popup().setLatLng([d_lat,d_lng]).setContent(
+                "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
+                "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
+                "<b>Destination Type:</b>" + " " + item.d_type);
+
+
+            // add origin marker to origMarkersLayer
+            var olatlng = L.latLng([o_lat,o_lng]);
+
+            var orig_marker = L.circleMarker(olatlng, {
+                clickable: true,
+                fillColor: "#259CEF",
+                radius: 10,
+                weight: 1,
+                opacity: 0.2,
+                fillOpacity: 0.6
+            }).bindPopup(orig_popup, {showOnMouseOver:true});
+
+            origMarkersLayer.addLayer(orig_marker);
+
+            // add origMarkersLayer to mymap
+            origMarkersLayer.addTo(mymap);
+
+            // add destination marker to mymap
+            var dlatlng = L.latLng([d_lat,d_lng]);
+
+            var dest_marker = L.circleMarker(dlatlng, {
+                clickable: true,
+                fillColor: "#4BF01B",
+                radius: 10,
+                weight: 1,
+                opacity: 0.2,
+                fillOpacity: 0.6
+            }).bindPopup(dest_popup, {showOnMouseOver:true});
+
+            destMarkersLayer.addLayer(dest_marker);
+            // add destMarkersLayer to mymap
+            destMarkersLayer.addTo(mymap);
+        });
+
+    });
+    addLabel();
+}
+
+
+//add label to map
+function addLabel() {
+
+    if(hasLegend) {
+        return
+    }
+
+    var legend = L.control({position: 'bottomleft'});
+
+    legend.onAdd = function (map) {
+
+        var div = L.DomUtil.create('div', 'info legend');
+        categories = ['ORIGIN','DESTINATION'];
+
+        for (var i = 0; i < categories.length; i++) {
+            div.innerHTML +=
+                '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
+                 (categories[i] ? categories[i] + '<br>' : '+');
+
+        }
+
+        return div;
+    };
+
+    legend.addTo(mymap);
+
+    hasLegend = true;
+
+}
+
+function getColor(d) {
+    return  d == 'ORIGIN' ? "#259CEF" :
+            d == 'DESTINATION' ? "#4BF01B" :
+                                 'red' ;
+}
 
 /*function getTypeColor(loctype) {
  return loctype = 'Home' ? '#CE71EC' :
