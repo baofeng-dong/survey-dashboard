@@ -26,7 +26,7 @@
           <li role="presentation"><a href="#">All</a></li>
           <li role="presentation" class="divider"></li>
           {% for route in routes %}
-          <li><a href="#">{{ route }}</a></li>
+          <li><a href="#" rte="{{route['rte']}}">{{ route["rte_desc"] }}</a></li>
           {% endfor %}
         </ul>
       </div>

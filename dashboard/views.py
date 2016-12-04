@@ -34,7 +34,7 @@ def result():
 
 @app.route('/map')
 def map():
-    routes = [ route['rte_desc'] for route in Helper.get_routes() ]
+    routes = Helper.get_routes()
     directions = Helper.get_directions()
 
     return render_template("map.html",
@@ -44,18 +44,18 @@ def map():
 @app.route('/map/_query', methods=['GET'])
 def map_query():
     response = []
-    rte_desc = ""
-    dir_desc = ""
+    rte = ""
+    dir = ""
 
 
-    if 'rte_desc' in request.args.keys():
-        rte_desc = request.args['rte_desc'].strip()
-        debug(rte_desc)
-    if 'dir_desc' in request.args.keys():
-        dir_desc = request.args['dir_desc'].strip()
-        debug(dir_desc)
-    response = Helper.query_map_data(rte_desc=rte_desc,
-        dir_desc=dir_desc)
+    if 'rte' in request.args.keys():
+        rte = request.args['rte'].strip()
+        debug(rte)
+    if 'dir' in request.args.keys():
+        dir = request.args['dir'].strip()
+        debug(dir)
+    response = Helper.query_map_data(rte=rte,
+        dir=dir)
 
     return jsonify(data=response)
 

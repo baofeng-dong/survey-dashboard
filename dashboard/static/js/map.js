@@ -2,13 +2,10 @@
     var sel_line = '';
     var sel_dir = '';
     var dir_lookup = {};
-    var rte_lookup = {};
-    var dir_num_lookup = {};
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
     var destMarkersLayer = new L.LayerGroup();
-
-    var routeLayer = new L.LayerGroup();
+    var routeLayer = new L.FeatureGroup();
 
     var hasLegend = false;
 
@@ -23,10 +20,11 @@ $(document).ready(function() {
     }).addTo(mymap);
 
     //load map with markers on initial page load with no filter params
-    rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
+    rebuild({'rte':sel_line, 'dir':sel_dir});
 
     $('#filter_line a').on('click', function() {
-        sel_line = this.text
+        sel_line = $(this).attr('rte');
+        console.log(sel_line);
         sel_dir = '';
         $("#line_btn").text(this.text+' ').append('<span class="caret"></span>');
 
@@ -37,13 +35,12 @@ $(document).ready(function() {
         }
         else {
             //update direction dropdown with correct names
-            var dir = dir_lookup[this.text];
+            var dir = dir_lookup[sel_line];
             console.log(this.text);
             console.log(dir_lookup);
-            $("#outbound_link").text(dir[0]+' ').show();
-            console.log(dir[0]);
-            $("#inbound_link").text(dir[1]+' ').show();
-            console.log(dir[1]);
+            $("#outbound_link").text(dir[0].dir_desc).attr("dir", dir[0].dir).show();
+            console.log(dir);
+            $("#inbound_link").text(dir[1].dir_desc).attr("dir", dir[1].dir).show();
             $(".direction_cls").show();
         }
         
@@ -51,25 +48,26 @@ $(document).ready(function() {
         
         if (sel_line == 'All') sel_line = '';
 
+
+        rebuild({'rte':sel_line, 'dir':sel_dir});
         routeLayer.clearLayers();
+        addRouteJson(sel_line,0);
 
-        rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
-
-        addRouteJson(sel_line);
     });
 
     $('#filter_dir a').on('click', function() {
 
-        sel_dir = this.text;
+        sel_dir = $(this).attr("dir");
         console.log("sel_dir: " + sel_dir);
         $("#dir_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         if (sel_dir == 'All') sel_dir = '';
-        rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
+        rebuild({'rte':sel_line, 'dir':sel_dir});
 
         console.log(sel_line,'\n',sel_dir);
         // add addRouteJson function to here
-        
+        routeLayer.clearLayers();
+        addRouteJson(sel_line,sel_dir);
     });
 
 })
@@ -78,42 +76,25 @@ $(document).ready(function() {
     //set when a route, direction or user is selected from dropdowns
     $(directions).each(function(index, item) {
         //console.log(directions);
-        if(!dir_lookup.hasOwnProperty(item.rte_desc)) {
-            dir_lookup[item.rte_desc] = {};
+        if(!dir_lookup.hasOwnProperty(item.rte)) {
+            dir_lookup[item.rte] = [null, null];
         }
-        dir_lookup[item.rte_desc][item.dir] = item.dir_desc;
-        //console.log(dir_lookup);
-        // build route lookup dict based on rte_desc
-        if(!rte_lookup.hasOwnProperty(item.rte_desc)) {
-            rte_lookup[item.rte_desc] = {};
-        }
-        rte_lookup[item.rte_desc] = item.rte;
+        dir_lookup[item.rte][item.dir] = item;
 
-        // build direction number lookup dict based on rte_desc and dir_desc
-        if(!dir_num_lookup.hasOwnProperty(item.rte_desc)) {
-            dir_num_lookup[item.rte_desc] = {};
-        }
-        dir_num_lookup[item.rte_desc][item.dir_desc] = item.dir;
 
     });
 
-    //console.log(dir_lookup);
-
-    console.log(rte_lookup);
-
-    console.log(dir_num_lookup);
+    console.log(dir_lookup);
 
 // add route GeoJson to map based on sel_line and sel_dir
 
-function addRouteJson(sel_line) {
+function addRouteJson(sel_line, sel_dir) {
 
     console.log(sel_line);
     console.log(sel_dir);
 
-    var rte = rte_lookup[sel_line];
-    console.log(rte);
 
-    var routeJson = rte + '_' + '0' + '_' + 'routes' + '.' + 'geojson';
+    var routeJson = sel_line + '_' + sel_dir + '_routes.geojson';
     console.log(routeJson);
     var path = base + 'static/geojson/';
 
@@ -127,7 +108,9 @@ function addRouteJson(sel_line) {
                 };
             }
         }).addTo(routeLayer);
+
         routeLayer.addTo(mymap);
+        routeLayer.bringToFront();
         console.log("added to mymap!");
     })
 

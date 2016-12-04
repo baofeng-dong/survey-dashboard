@@ -59,20 +59,20 @@ class Helper(object):
 
 
     @staticmethod
-    def query_map_data(rte_desc='', dir_desc=''):
+    def query_map_data(rte='', dir=''):
         ret_val = []
         query_args = {}
         where = ""
 
-        rte_desc_filter = " r.rte_desc = :rte_desc "
-        dir_desc_filter = " r.dir_desc = :dir_desc "
+        rte_filter = " r.rte = :rte "
+        dir_filter = " r.dir = :dir "
         
         def construct_where(string, param, filt_name):
             if not param:
                 return string
 
-            if filt_name == "rte_desc": filt = rte_desc_filter
-            else: filt = dir_desc_filter
+            if filt_name == "rte": filt = rte_filter
+            else: filt = dir_filter
 
             if string:
                 return string + " AND " + filt
@@ -81,7 +81,7 @@ class Helper(object):
       
         # build where clause
         debug(where)
-        for param in [(rte_desc, 'rte_desc'),(dir_desc, 'dir_desc')]:
+        for param in [(rte, 'rte'),(dir, 'dir')]:
             where = construct_where(where, param[0], param[1])
             debug(where)
             debug(param[0])
