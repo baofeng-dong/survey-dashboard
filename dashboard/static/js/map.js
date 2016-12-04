@@ -7,6 +7,9 @@
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
     var destMarkersLayer = new L.LayerGroup();
+
+    var routeLayer = new L.LayerGroup();
+
     var hasLegend = false;
 
 //initialize map 
@@ -36,7 +39,7 @@ $(document).ready(function() {
             //update direction dropdown with correct names
             var dir = dir_lookup[this.text];
             console.log(this.text);
-            console.log("dir_lookup: " + dir_lookup);
+            console.log(dir_lookup);
             $("#outbound_link").text(dir[0]+' ').show();
             console.log(dir[0]);
             $("#inbound_link").text(dir[1]+' ').show();
@@ -47,17 +50,26 @@ $(document).ready(function() {
         $("#dir_btn").text('All ').append('<span class="caret"></span>');
         
         if (sel_line == 'All') sel_line = '';
+
+        routeLayer.clearLayers();
+
         rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
+
+        addRouteJson(sel_line);
     });
 
     $('#filter_dir a').on('click', function() {
+
         sel_dir = this.text;
         console.log("sel_dir: " + sel_dir);
         $("#dir_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         if (sel_dir == 'All') sel_dir = '';
         rebuild({'rte_desc':sel_line, 'dir_desc':sel_dir});
+
         console.log(sel_line,'\n',sel_dir);
+        // add addRouteJson function to here
+        
     });
 
 })
@@ -90,6 +102,36 @@ $(document).ready(function() {
     console.log(rte_lookup);
 
     console.log(dir_num_lookup);
+
+// add route GeoJson to map based on sel_line and sel_dir
+
+function addRouteJson(sel_line) {
+
+    console.log(sel_line);
+    console.log(sel_dir);
+
+    var rte = rte_lookup[sel_line];
+    console.log(rte);
+
+    var routeJson = rte + '_' + '0' + '_' + 'routes' + '.' + 'geojson';
+    console.log(routeJson);
+    var path = base + 'static/geojson/';
+
+    $.getJSON(path + routeJson, function(data) {
+        var route = L.geoJson(data, {
+            style: function (feature) {
+                return {
+                        color: getBaseColor(feature.properties.rte),
+                        weight: 2.5,
+                        opacity: 0.80
+                };
+            }
+        }).addTo(routeLayer);
+        routeLayer.addTo(mymap);
+        console.log("added to mymap!");
+    })
+
+}
 
 
 function rebuild(args) {
@@ -203,6 +245,16 @@ function getColor(d) {
     return  d == 'ORIGIN' ? "#259CEF" :
             d == 'DESTINATION' ? "#4BF01B" :
                                  'red' ;
+}
+
+function getBaseColor(rte) {
+    return rte == 90  ? '#d02c0f' :
+           rte == 100 ? '#0069AA' :
+           rte == 190 ? '#FFC425' :
+           rte == 200 ? '#008752' :
+           rte == 203 ? '#c044ec' :
+           rte == 290 ? '#D15F27' :
+                        '#1c4ca5' ;
 }
 
 /*function getTypeColor(loctype) {
