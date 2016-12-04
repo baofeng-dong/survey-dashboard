@@ -66,6 +66,7 @@
     //{rte_desc:{0:<outbound dir_desc>, 1:<inbound dir_desc>}, ... }
     var directions = {{ directions|tojson|safe }};
     console.log(directions);
+    var base = '{{url_for('index')}}';
 
 </script>
 
