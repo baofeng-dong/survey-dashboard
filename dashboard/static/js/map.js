@@ -5,6 +5,9 @@
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
     var destMarkersLayer = new L.LayerGroup();
+    //create layer of orig dest points pair layer
+    var odPairLayer = new L.LayerGroup();
+    //create layer of transit routes layer
     var routeLayer = new L.FeatureGroup();
 
     var hasLegend = false;
@@ -62,7 +65,11 @@ $(document).ready(function() {
         $("#dir_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         if (sel_dir == 'All') sel_dir = '';
+        origMarkersLayer.clearLayers();
+        destMarkersLayer.clearLayers();
+        odPairLayer.clearLayers();
         rebuild({'rte':sel_line, 'dir':sel_dir});
+        rebuildPath({'rte':sel_line, 'dir':sel_dir});
 
         console.log(sel_line,'\n',sel_dir);
         // add addRouteJson function to here
@@ -121,6 +128,7 @@ function rebuild(args) {
     //clear previous orig and dest markers
     origMarkersLayer.clearLayers();
     destMarkersLayer.clearLayers();
+    odPairLayer.clearLayers();
 
     console.log(args);
 
@@ -133,14 +141,10 @@ function rebuild(args) {
         $(data.data).each(function(index, item) {
             // get origin lat and long from data.data json
             var o_lat = item.o_lat;
-            //console.log("o_lat: " + o_lat);
             var o_lng = item.o_lng;
-            //console.log("o_lng: " + o_lng);
             // get destination lat and long
             var d_lat = item.d_lat;
-            //console.log("d_lat: " + d_lat);
             var d_lng = item.d_lng;
-            //console.log("d_lng: " + d_lng);
 
             // defines popup content for orig markers
             var orig_popup = L.popup().setLatLng([o_lat,o_lng]).setContent(
@@ -155,9 +159,10 @@ function rebuild(args) {
                 "<b>Destination Type:</b>" + " " + item.d_type);
 
 
-            // add origin marker to origMarkersLayer
+            // lat and lng for orig and dest markers
             var olatlng = L.latLng([o_lat,o_lng]);
-
+            var dlatlng = L.latLng([d_lat,d_lng]);
+            //defines orig marker
             var orig_marker = L.circleMarker(olatlng, {
                 clickable: true,
                 fillColor: "#259CEF",
@@ -166,15 +171,7 @@ function rebuild(args) {
                 opacity: 0.2,
                 fillOpacity: 0.6
             }).bindPopup(orig_popup, {showOnMouseOver:true});
-
-            origMarkersLayer.addLayer(orig_marker);
-
-            // add origMarkersLayer to mymap
-            origMarkersLayer.addTo(mymap);
-
-            // add destination marker to mymap
-            var dlatlng = L.latLng([d_lat,d_lng]);
-
+            //defines dest marker
             var dest_marker = L.circleMarker(dlatlng, {
                 clickable: true,
                 fillColor: "#4BF01B",
@@ -183,16 +180,60 @@ function rebuild(args) {
                 opacity: 0.2,
                 fillOpacity: 0.6
             }).bindPopup(dest_popup, {showOnMouseOver:true});
+            //add orig and dest markers to odPairLayer
+            odPairLayer.addLayer(orig_marker);
+            odPairLayer.addLayer(dest_marker);
+            // add odPairLayer to mymap
+            odPairLayer.addTo(mymap);
 
-            destMarkersLayer.addLayer(dest_marker);
-            // add destMarkersLayer to mymap
-            destMarkersLayer.addTo(mymap);
         });
 
     });
     addLabel();
 }
 
+
+function rebuildPath(args) {
+    //clear layers
+    odPairLayer.clearLayers();
+
+    console.log(args);
+
+    $.getJSON('map/_query', args, function(data) {
+
+        //retrive origin and destination lat and lng
+
+        console.log(data);
+
+        $(data.data).each(function(index, item) {
+            // get origin lat and long from data.data json
+            var o_lat = item.o_lat;
+            var o_lng = item.o_lng;
+            // get destination lat and long
+            var d_lat = item.d_lat;
+            var d_lng = item.d_lng;
+
+            // lat and lng for orig and dest markers
+            var olatlng = L.latLng([o_lat,o_lng]);
+            var dlatlng = L.latLng([d_lat,d_lng]);
+            //defines points list for the path
+            var odPair = [olatlng, dlatlng];
+            //defines the path that links orig and dest markers
+            var pairPath = new L.Polyline(odPair, {
+                color: '#ff6600',
+                weight: 2,
+                opacity: 0.6,
+                smoothFactor: 1
+            });
+            //adds the path to odPairLayer
+            odPairLayer.addLayer(pairPath);
+            //adds odPairLayer to mymap
+            odPairLayer.addTo(mymap);
+        });
+
+    });
+
+}
 
 //add label to map
 function addLabel() {
