@@ -201,8 +201,6 @@ function rebuildPath(args) {
 
     $.getJSON('map/_query', args, function(data) {
 
-        //retrive origin and destination lat and lng
-
         console.log(data);
 
         $(data.data).each(function(index, item) {
@@ -216,7 +214,7 @@ function rebuildPath(args) {
             // lat and lng for orig and dest markers
             var olatlng = L.latLng([o_lat,o_lng]);
             var dlatlng = L.latLng([d_lat,d_lng]);
-            //defines points list for the path
+            //defines points pair list for the path
             var odPair = [olatlng, dlatlng];
             //defines the path that links orig and dest markers
             var pairPath = new L.Polyline(odPair, {
@@ -230,9 +228,7 @@ function rebuildPath(args) {
             //adds odPairLayer to mymap
             odPairLayer.addTo(mymap);
         });
-
     });
-
 }
 
 //add label to map
