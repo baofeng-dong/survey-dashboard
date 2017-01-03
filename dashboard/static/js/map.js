@@ -6,11 +6,43 @@
     var origMarkersLayer = new L.LayerGroup();
     var destMarkersLayer = new L.LayerGroup();
     //create layer of orig dest points pair layer
-    var odPairLayer = new L.LayerGroup();
+    var odPairLayer = new L.FeatureGroup();
+    //create layer to store all orig dest points and path
+    var odPairLayerGroup = new L.FeatureGroup();
     //create layer of transit routes layer
     var routeLayer = new L.FeatureGroup();
 
     var hasLegend = false;
+    var highLight = null;
+    var selected;
+    var style = {
+                color: '#ff6600',
+                weight: 2,
+                opacity: 0.6,
+                smoothFactor: 1,
+                clickable: true
+    };
+    var dmarkerStyle = {
+                clickable: true,
+                fillColor: "#4BF01B",
+                radius: 10,
+                weight: 1,
+                opacity: 0.2,
+                fillOpacity: 0.6
+    };
+    var omarkerStyle = {
+                clickable: true,
+                fillColor: "#259CEF",
+                radius: 10,
+                weight: 1,
+                opacity: 0.2,
+                fillOpacity: 0.6
+    };
+    var newStyle = {
+                color:'red',
+                opacity: 0.9,
+                weight:5
+    }
 
 //initialize map 
 $(document).ready(function() {
@@ -67,8 +99,8 @@ $(document).ready(function() {
         if (sel_dir == 'All') sel_dir = '';
         origMarkersLayer.clearLayers();
         destMarkersLayer.clearLayers();
-        odPairLayer.clearLayers();
-        rebuild({'rte':sel_line, 'dir':sel_dir});
+        odPairLayerGroup.clearLayers();
+        //rebuild({'rte':sel_line, 'dir':sel_dir});
         rebuildPath({'rte':sel_line, 'dir':sel_dir});
 
         console.log(sel_line,'\n',sel_dir);
@@ -128,7 +160,7 @@ function rebuild(args) {
     //clear previous orig and dest markers
     origMarkersLayer.clearLayers();
     destMarkersLayer.clearLayers();
-    odPairLayer.clearLayers();
+    odPairLayerGroup.clearLayers();
 
     console.log(args);
 
@@ -163,28 +195,14 @@ function rebuild(args) {
             var olatlng = L.latLng([o_lat,o_lng]);
             var dlatlng = L.latLng([d_lat,d_lng]);
             //defines orig marker
-            var orig_marker = L.circleMarker(olatlng, {
-                clickable: true,
-                fillColor: "#259CEF",
-                radius: 10,
-                weight: 1,
-                opacity: 0.2,
-                fillOpacity: 0.6
-            }).bindPopup(orig_popup, {showOnMouseOver:true});
+            var orig_marker = L.circleMarker(olatlng, omarkerStyle).bindPopup(orig_popup, {showOnMouseOver:true});
             //defines dest marker
-            var dest_marker = L.circleMarker(dlatlng, {
-                clickable: true,
-                fillColor: "#4BF01B",
-                radius: 10,
-                weight: 1,
-                opacity: 0.2,
-                fillOpacity: 0.6
-            }).bindPopup(dest_popup, {showOnMouseOver:true});
-            //add orig and dest markers to odPairLayer
-            odPairLayer.addLayer(orig_marker);
-            odPairLayer.addLayer(dest_marker);
-            // add odPairLayer to mymap
-            odPairLayer.addTo(mymap);
+            var dest_marker = L.circleMarker(dlatlng, dmarkerStyle).bindPopup(dest_popup, {showOnMouseOver:true});
+            //add orig and dest markers to odPairLayerGroup
+            odPairLayerGroup.addLayer(orig_marker);
+            odPairLayerGroup.addLayer(dest_marker);
+            // add odPairLayerGroup to mymap
+            odPairLayerGroup.addTo(mymap);
 
         });
 
@@ -195,7 +213,7 @@ function rebuild(args) {
 
 function rebuildPath(args) {
     //clear layers
-    odPairLayer.clearLayers();
+    odPairLayerGroup.clearLayers();
 
     console.log(args);
 
@@ -217,19 +235,61 @@ function rebuildPath(args) {
             //defines points pair list for the path
             var odPair = [olatlng, dlatlng];
             //defines the path that links orig and dest markers
-            var pairPath = new L.Polyline(odPair, {
-                color: '#ff6600',
-                weight: 2,
-                opacity: 0.6,
-                smoothFactor: 1
+            var pairPath = new L.Polyline(odPair, style);
+            pairPath.on('mouseover', function(e) {
+
+                var path = e.target;
+                path.setStyle({
+                    color:'purple',
+                    opacity: 0.9,
+                    weight:5
+                });
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    path.bringToFront();
+                }
             });
-            //adds the path to odPairLayer
+            pairPath.on('mouseout', function(e) {
+                var path = e.target;
+                path.setStyle(style);
+            });
+            //defines orig marker
+            var orig_marker = L.circleMarker(olatlng, omarkerStyle);
+            //defines dest marker
+            var dest_marker = L.circleMarker(dlatlng, dmarkerStyle);
+            //adds the path to odPairLayerGroup
             odPairLayer.addLayer(pairPath);
-            //adds odPairLayer to mymap
-            odPairLayer.addTo(mymap);
+            odPairLayer.addLayer(orig_marker);
+            odPairLayer.addLayer(dest_marker);
+            odPairLayerGroup.addLayer(odPairLayer);
+
+            /*odPairLayer.eachLayer(function (layer) {
+                layer.on('click', function(e) {
+                    var selected = e.target;
+                    selected.bringToFront();
+                    selected.setStyle(newStyle);
+                });
+            });*/
+            /*odPairLayerGroup.on('click', function(e) {
+                var layer = e.target;
+                layer.bringToFront();
+                layer.setStyle(newStyle);
+            });*/
+            //adds odPairLayerGroup to mymap
+            odPairLayerGroup.addTo(mymap);
         });
     });
 }
+
+function removeHighlight() {
+    //check for highlight
+    if (highLight !== null) {
+        //set default style
+        highLight.setStyle(getDefaultStyle());
+        //reset highLight
+        highLight = null;
+    }
+}
+
 
 //add label to map
 function addLabel() {
