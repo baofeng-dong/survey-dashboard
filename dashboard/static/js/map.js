@@ -257,10 +257,9 @@ function rebuildPath(args) {
             //defines dest marker
             var dest_marker = L.circleMarker(dlatlng, dmarkerStyle);
             //adds the path to odPairLayerGroup
-            odPairLayer.addLayer(pairPath);
-            odPairLayer.addLayer(orig_marker);
-            odPairLayer.addLayer(dest_marker);
-            odPairLayerGroup.addLayer(odPairLayer);
+            odPairLayerGroup.addLayer(pairPath);
+            odPairLayerGroup.addLayer(orig_marker);
+            odPairLayerGroup.addLayer(dest_marker);
 
             /*odPairLayer.eachLayer(function (layer) {
                 layer.on('click', function(e) {
