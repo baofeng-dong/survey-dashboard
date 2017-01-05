@@ -20,6 +20,7 @@
                 weight: 2,
                 opacity: 0.6,
                 smoothFactor: 1,
+                dashArray: '10,10',
                 clickable: true
     };
     var dmarkerStyle = {
@@ -242,7 +243,8 @@ function rebuildPath(args) {
                 path.setStyle({
                     color:'purple',
                     opacity: 0.9,
-                    weight:5
+                    weight:5,
+                    dashArray: '10,10'
                 });
                 if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                     path.bringToFront();
