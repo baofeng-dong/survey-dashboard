@@ -211,7 +211,7 @@ function rebuild(args) {
     addLabel();
 }
 
-
+//to add path between origin and destination points
 function rebuildPath(args) {
     //clear layers
     odPairLayerGroup.clearLayers();
@@ -237,6 +237,23 @@ function rebuildPath(args) {
             var odPair = [olatlng, dlatlng];
             //defines the path that links orig and dest markers
             var pairPath = new L.Polyline(odPair, style);
+
+            var popup = L. popup().setContent(
+                "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
+                "<b>Direction:</b>" + " " + item.dir_desc + '<br />' + 
+                "<b>Satisfaction:</b>" + " " + item.satisfaction + '<br />' + 
+                "<b>Travel Change:</b>" + " " + item.travel_change + '<br />' +
+                "<b>Job Approval:</b>" + " " + item.job_approval + '<br />' +
+                "<b>One Change:</b>" + " " + item.one_change + '<br />' +
+                "<b>Origin:</b>" + " " + item.o_type + '<br />' + 
+                "<b>Destination:</b>" + " " + item.d_type + '<br />' + 
+                "<b>Rider Years:</b>" + " " + item.ride_years + '<br />' +
+                "<b>Gender:</b>" + " " + item.gender + '<br />' +
+                "<b>Income:</b>" + " " + item.income
+                );
+
+            pairPath.bindPopup(popup);
+            
             pairPath.on('mouseover', function(e) {
 
                 var path = e.target;
