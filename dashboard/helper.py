@@ -102,6 +102,15 @@ class Helper(object):
                 f.dir,
                 r.dir_desc,
                 case
+                    when q1_satisfaction = '1' then 'Very satisfied'
+                    when q1_satisfaction = '3' then 'Somewhat satisfied'
+                    when q1_satisfaction = '4' then 'Neutral'
+                    when q1_satisfaction = '5' then 'Somewhat dissatisfied'
+                    when q1_satisfaction = '6' then 'Very dissatisfied'
+                    when q1_satisfaction = '7' then 'Do not know'
+                    else                            ''
+                end as satisfaction,
+                case
                     when q3_orig_type = '1' then 'Home'
                     when q3_orig_type = '2' then 'Work'
                     when q3_orig_type = '3' then 'School'
@@ -111,6 +120,7 @@ class Helper(object):
                     when q3_orig_type = '7' then 'Visit family or friends'
                     when q3_orig_type = '8' then 'Medical appointment'
                     when q3_orig_type = '9' then 'Other'
+                    else                         ''
                 end as o_type,
                 case
                     when q4_dest_type = '1' then 'Home'
@@ -122,11 +132,95 @@ class Helper(object):
                     when q4_dest_type = '7' then 'Visit family or friends'
                     when q4_dest_type = '8' then 'Medical appointment'
                     when q4_dest_type = '9' then 'Other'
+                    else                         ''
                 end as d_type,
                 f.q5_orig_lat as o_lat,
                 f.q5_orig_lng as o_lng,
                 f.q6_dest_lat as d_lat,
-                f.q6_dest_lng as d_lng
+                f.q6_dest_lng as d_lng,
+                case
+                    when q7_travel_change = '1' then 'More'
+                    when q7_travel_change = '2' then 'Same'
+                    when q7_travel_change = '3' then 'Less'
+                    when q7_travel_change = '4' then 'Do not know'
+                    else                             ''
+                end as ride_change,
+                case
+                    when q18_ridership = '1' then 'Frequent rider'
+                    when q18_ridership = '2' then 'Regular rider'
+                    when q18_ridership = '3' then 'Occasional rider'
+                    when q18_ridership = '4' then 'Infrequent rider'
+                    when q18_ridership = '5' then 'Do not know'
+                    else                          ''
+                end as ridership,
+                case
+                    when q19_ride_years = '1' then 'Less than 1 year'
+                    when q19_ride_years = '2' then '1 to 2 years'
+                    when q19_ride_years = '3' then '3 to 5 years'
+                    when q19_ride_years = '4' then '6 to 10 years'
+                    when q19_ride_years = '5' then 'Over 10 years'
+                    when q19_ride_years = '6' then 'Do not know'
+                    else                           ''
+                end as ride_years,
+                case
+                    when q20_approval = '1' then 'Strongly approve'
+                    when q20_approval = '2' then 'Somewhat approve'
+                    when q20_approval = '3' then 'Somewhat disapprove'
+                    when q20_approval = '4' then 'Strongly disapprove'
+                    when q20_approval = '5' then 'Do not know'
+                    else                         ''
+                end as job_approval,
+                case
+                    when q21_one_change = '1' then 'Frequency improved'
+                    when q21_one_change = '2' then 'Reliability improved'
+                    when q21_one_change = '3' then 'Service expanded'
+                    when q21_one_change = '4' then 'Routes go to more places'
+                    when q21_one_change = '5' then 'Stops closer to my origin/destination'
+                    when q21_one_change = '6' then 'Crowding less'
+                    when q21_one_change = '7' then 'Faster trip'
+                    when q21_one_change = '8' then 'Transfer less'
+                    when q21_one_change = '9' then 'Safer trip'
+                    when q21_one_change = '10' then 'Fare less expensive'
+                    when q21_one_change = '11' then 'Other'
+                    when q21_one_change = '12' then 'Nothing'
+                    when q21_one_change = '13' then 'Do not know'
+                    else                            ''
+                end as one_change,
+                coalesce(f.q24_zipcode, 10000),
+                case
+                    when q25_age = '1' then 'Under 18'
+                    when q25_age = '2' then '18-24'
+                    when q25_age = '3' then '25-34'
+                    when q25_age = '4' then '35-44'
+                    when q25_age = '5' then '45-54'
+                    when q25_age = '6' then '55-64'
+                    when q25_age = '7' then '65 or more'
+                    else                    ''
+                end as age,
+                case 
+                    when q26_gender = '1' then 'Female'
+                    when q26_gender = '2' then 'Male'
+                    when q26_gender = '3' then 'Transgender'
+                    when q26_gender = '4' then 'Other'
+                    else                       ''
+                end as gender,
+                case
+                    when q29_income = '1' then 'Under $10,000'
+                    when q29_income = '2' then '$10,000-$19,999'
+                    when q29_income = '3' then '$20,000-$29,999'
+                    when q29_income = '4' then '$30,000-$39,999'
+                    when q29_income = '5' then '$40,000-$49,999'
+                    when q29_income = '6' then '$50,000-$59,999'
+                    when q29_income = '7' then '$60,000-$69,999'
+                    when q29_income = '8' then '$70,000-$79,999'
+                    when q29_income = '9' then '$80,000-$89,999'
+                    when q29_income = '10' then '$90,000-$99,999'
+                    when q29_income = '11' then '$100,000-$124,999'
+                    when q29_income = '12' then '$125,000-$150,000'
+                    when q29_income = '13' then 'Over $150,000'
+                    when q29_income = '14' then 'Do not know'
+                    else                        ''
+                end as income
             from odk.fall_survey_2016_view f
                 join odk.rte_lookup r
                 on f.rte::integer = r.rte and f.dir::integer = r.dir """
@@ -146,12 +240,22 @@ class Helper(object):
         RTE_DESC = 1
         DIR = 2
         DIR_DESC = 3
-        OTYPE = 4
-        DTYPE =5
-        OLAT = 6
-        OLNG = 7
-        DLAT = 8
-        DLNG = 9
+        SATISFACTION = 4
+        OTYPE = 5
+        DTYPE =6
+        OLAT = 7
+        OLNG = 8
+        DLAT = 9
+        DLNG = 10
+        TRAVEL_CHANGE = 11
+        RIDERSHIP = 12
+        RIDE_YEARS = 13
+        JOB_APPROVAL = 14
+        ONE_CHANGE = 15
+        ZIPCODE = 16
+        AGE = 17
+        GENDER = 18
+        INCOME = 19
 
 
         # each record will be converted as json
@@ -163,12 +267,22 @@ class Helper(object):
             data['rte_desc'] = record[RTE_DESC]
             data['dir'] = record[DIR]
             data['dir_desc'] = record[DIR_DESC]
+            data['satisfaction'] = record[SATISFACTION]
             data['o_type'] = record[OTYPE]
             data['d_type'] = record[DTYPE]
             data['o_lat'] = float(record[OLAT])
             data['o_lng'] = float(record[OLNG])
             data['d_lat'] = float(record[DLAT])
             data['d_lng'] = float(record[DLNG])
+            data['travel_change'] = record[TRAVEL_CHANGE]
+            data['ridership'] = record[RIDERSHIP]
+            data['ride_years'] = record[RIDE_YEARS]
+            data['job_approval'] = record[JOB_APPROVAL]
+            data['one_change'] = record[ONE_CHANGE]
+            data['zipcode'] = record[ZIPCODE]
+            data['age'] = record[AGE]
+            data['gender'] = record[GENDER]
+            data['income'] = record[INCOME]
 
             ret_val.append(data)
         web_session.close()
