@@ -247,7 +247,9 @@ function rebuildPath(args) {
                 "<b>One Change:</b>" + " " + item.one_change + '<br />' +
                 "<b>Origin:</b>" + " " + item.o_type + '<br />' + 
                 "<b>Destination:</b>" + " " + item.d_type + '<br />' + 
+                "<b>Ridership:</b>" + " " + item.ridership + '<br />' +
                 "<b>Rider Years:</b>" + " " + item.ride_years + '<br />' +
+                "<b>Age:</b>" + " " + item.age + '<br />' +
                 "<b>Gender:</b>" + " " + item.gender + '<br />' +
                 "<b>Income:</b>" + " " + item.income
                 );
