@@ -183,13 +183,13 @@ function rebuild(args) {
             var orig_popup = L.popup().setLatLng([o_lat,o_lng]).setContent(
                 "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
                 "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
-                "<b>Origin Type:</b>" + " " + item.o_type);
+                "<b>Origin:</b>" + " " + item.o_type);
 
             // defines popup content for destination markers
             var dest_popup = L.popup().setLatLng([d_lat,d_lng]).setContent(
                 "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
                 "<b>Direction:</b>" + " " + item.dir_desc + '<br />' +
-                "<b>Destination Type:</b>" + " " + item.d_type);
+                "<b>Destination:</b>" + " " + item.d_type);
 
 
             // lat and lng for orig and dest markers
