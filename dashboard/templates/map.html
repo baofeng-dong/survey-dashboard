@@ -3,14 +3,15 @@
 
 {% block content %}
 
+
+<div id="control-section">
+<!-- dropdowns that trigger ajax call to update table based on selection -->
+<div id="map-select">
 <div id="data-intro">
     <h4><b>Map Dashboard</b></h4>
     <p>Note: select route, direction to view origin and destination data.</p>
 
 </div>
-
-<!-- dropdowns that trigger ajax call to update table based on selection -->
-<div id="map-select">
 <table height="100%">
   <tr id="menu-dd">
     <td style="padding-right:1em">
@@ -55,6 +56,69 @@
 </div>
 
 
+
+<div id="map-view">
+
+<label>Select a Map View</label>
+<div class="ride-view">
+
+<table class="fixed" width="100%">
+  <col width="25%" />
+  <col width="25%" />
+  <col width="25%" />
+  <col width="25%" />
+
+  <tr>
+    <td><input class = "mapview" type="radio" name="viewList" value="ride-more">Ride More</td>
+    <td><input class = "mapview" type="radio" name="viewList" value="ride-less">Ride Less</td>
+    <td><input class = "mapview" type="radio" name="viewList" value="ride-same">Ride Same</td>
+    <td><input class = "mapview" type="radio" name="viewList" value="ride-same">All</td>
+  </tr>
+
+</table>
+</div>
+
+
+<div class="tod-view">
+<label>Select Time of Day</label>
+
+<table class="fixed" width="100%">
+  <col width="20%" />
+  <col width="20%" />
+  <col width="20%" />
+  <col width="20%" />
+  <col width="20%" />
+
+  <tr>
+    <td><input class = "mapview" type="checkbox" name="viewList" value="early-am">Early AM</td>
+    <td><input class = "mapview" type="checkbox" name="viewList" value="am-peak">AM Peak</td>
+    <td><input class = "mapview" type="checkbox" name="viewList" value="mid-day">Midday</td>
+    <td><input class = "mapview" type="checkbox" name="viewList" value="pm-peak">PM Peak</td>
+    <td><input class = "mapview" type="checkbox" name="viewList" value="evening">Evening</td>
+  </tr>
+
+</table>
+
+</div>
+
+
+<div class="week-view">
+<label>Select Day of Week</label>
+
+<table class="fixed" width="400px">
+  <col width="100px" />
+  <col width="100px" />
+
+  <tr>
+    <td><input class = "checkweek" type="checkbox" name="vehicle" value="Weekday"> Weekday</td>
+    <td><input class = "checkweek" type="checkbox" name="vehicle" value="Weekend" > Weekend</td>
+  </tr>
+</table>
+
+</div>
+
+</div>
+</div>
 
 <div id="mapid">
     
