@@ -9,7 +9,7 @@
 <div id="map-select">
 <div id="data-intro">
     <h4><b>Map Dashboard</b></h4>
-    <p>Note: select route, direction to view origin and destination data.</p>
+    <p>Note: select route, direction, origin/destination, day of week, and time of day to view origin and destination data.</p>
 
 </div>
 <table height="100%">
@@ -19,8 +19,9 @@
     </td>
     <td>
       <div class="btn-group" role="form">
-        <button id="line_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        All    <span class="caret"></span>
+        <button id="line_btn" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        All    
+        <span class="caret"></span>
         </button>
         <ul id="filter_line" class="dropdown-menu scrollable-menu" role="menu">
           <li role="presentation" class="dropdown-header">Route</li>
@@ -32,15 +33,54 @@
         </ul>
       </div>
     </td>
+    <td style="padding-left: 4em; padding-right: 1em">
+      <strong>Day of Week:</strong>
+    </td>
+    <td>
+      <div class="dropdown">
+        <button id="day_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Day of Week
+        <span class="caret"></span></button>
+        <ul id="filter_day" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">Weekday</a></li>
+            <li><a href="#">Weekend</a></li>
+            <li><a href="#">Saturday</a></li>
+            <li><a href="#">Sunday</a></li>
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em">
+      <strong>Origin:</strong>
+    </td>
+    <td>
+      <div class="dropdown">
+        <button id="origin_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Origin Type
+        <span class="caret"></span></button>
+        <ul id="filter_origin" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">School</a></li>
+            <li><a href="#">Recreation</a></li>
+            <li><a href="#">Shopping</a></li>
+            <li><a href="#">Personal business</a></li>
+            <li><a href="#">Visit family/friends</a></li>
+            <li><a href="#">Medical appointment</a></li>
+            <li><a href="#">Other</a></li>
+        </ul>
+      </div>
+    </td>
   </tr>
   <tr id="menu-dd">
-  <td class="direction_cls" style="padding-right:1em; display:none">
+  <td class="direction_cls" style="padding-right:1em; display:show">
     <strong>Direction:</strong>
   </td>
-    <td class="direction_cls" style="display: none;">
+    <td class="direction_cls" style="display: show;">
       <div class="btn-group">
-        <button id="dir_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        All    <span class="caret"></span>
+        <button id="dir_btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        All    
+        <span class="caret"></span>
         </button>
         <ul id="filter_dir" class="dropdown-menu" role="menu">
           <li role="presentation" class="dropdown-header">Direction</li>
@@ -51,13 +91,56 @@
         </ul>
       </div>
     </td>
+        <td style="padding-left: 4em; padding-right: 1em">
+      <strong>Time of Day:</strong>
+    </td>
+    <td>
+      <div class="dropdown">
+        <button id="tod_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Time of Day
+        <span class="caret"></span></button>
+        <ul id="filter_tod" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">Weekday Early AM</a></li>
+            <li><a href="#">Weekday AM Peak</a></li>
+            <li><a href="#">Weekday Midday</a></li>
+            <li><a href="#">Weekday PM Peak</a></li>
+            <li><a href="#">Weekday Night</a></li>
+            <li><a href="#">Weekend Morning</a></li>
+            <li><a href="#">Weekend Midday</a></li>
+            <li><a href="#">Weekend Night</a></li>
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em">
+      <strong>Destination:</strong>
+    </td>
+    <td>
+      <div class="dropdown">
+        <button id="dest_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Destination Type
+        <span class="caret"></span></button>
+        <ul id="filter_dest" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Work</a></li>
+            <li><a href="#">School</a></li>
+            <li><a href="#">Recreation</a></li>
+            <li><a href="#">Shopping</a></li>
+            <li><a href="#">Personal business</a></li>
+            <li><a href="#">Visit family/friends</a></li>
+            <li><a href="#">Medical appointment</a></li>
+            <li><a href="#">Other</a></li>
+        </ul>
+      </div>
+    </td>
   </tr>
 </table>
 </div>
+</div>
 
 
-
-<div id="map-view">
+<!--<div id="map-view">
 
 <label>Select a Map View</label>
 <div class="ride-view">
@@ -117,8 +200,7 @@
 
 </div>
 
-</div>
-</div>
+</div> -->
 
 <div id="mapid">
     
