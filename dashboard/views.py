@@ -44,18 +44,12 @@ def map():
 @app.route('/map/_query', methods=['GET'])
 def map_query():
     response = []
-    rte = ""
-    dir = ""
+    where = ""
+    args = request.args
 
-
-    if 'rte' in request.args.keys():
-        rte = request.args['rte'].strip()
-        debug(rte)
-    if 'dir' in request.args.keys():
-        dir = request.args['dir'].strip()
-        debug(dir)
-    response = Helper.query_map_data(rte=rte,
-        dir=dir)
+    where = Helper.buildconditions(args)
+    debug(where)
+    response = Helper.query_map_data(where=where)
 
     return jsonify(data=response)
 
