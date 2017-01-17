@@ -1,6 +1,15 @@
 
     var sel_line = '';
     var sel_dir = '';
+    var sel_args = {
+        rte : "",
+        dir : "",
+        day : "",
+        tod : "",
+        orig : "",
+        dest : ""
+    }
+
     var dir_lookup = {};
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
@@ -56,11 +65,12 @@ $(document).ready(function() {
     }).addTo(mymap);
 
     //load map with markers on initial page load with no filter params
-    rebuild({'rte':sel_line, 'dir':sel_dir});
+    rebuild(sel_args);
 
     $('#filter_line a').on('click', function() {
         sel_line = $(this).attr('rte');
         console.log(sel_line);
+        sel_args.rte = sel_line;
         sel_dir = '';
         $("#line_btn").text(this.text+' ').append('<span class="caret"></span>');
 
@@ -82,10 +92,15 @@ $(document).ready(function() {
         
         $("#dir_btn").text('All ').append('<span class="caret"></span>');
         
-        if (sel_line == 'All') sel_line = '';
+        if (sel_line == 'All') {
+            sel_line = '';
+            sel_dir = '';
+            sel_args.rte = '';
+            sel_args.dir = '';
+        }
 
 
-        rebuild({'rte':sel_line, 'dir':sel_dir});
+        rebuild(sel_args);
         routeLayer.clearLayers();
         addRouteJson(sel_line,0);
 
@@ -95,20 +110,39 @@ $(document).ready(function() {
 
         sel_dir = $(this).attr("dir");
         console.log("sel_dir: " + sel_dir);
+        sel_args.dir = sel_dir;
+        console.log(sel_args);
         $("#dir_btn").text(this.text+' ').append('<span class="caret"></span>');
         
-        if (sel_dir == 'All') sel_dir = '';
+        if (sel_dir == 'All') {
+            sel_dir = '';
+            sel_args.dir = '';
+        } 
         origMarkersLayer.clearLayers();
         destMarkersLayer.clearLayers();
         odPairLayerGroup.clearLayers();
         //rebuild({'rte':sel_line, 'dir':sel_dir});
-        rebuildPath({'rte':sel_line, 'dir':sel_dir});
+        rebuildPath(sel_args);
 
-        console.log(sel_line,'\n',sel_dir);
+        console.log(sel_args);
         // add addRouteJson function to here
         routeLayer.clearLayers();
         addRouteJson(sel_line,sel_dir);
     });
+
+    $('#filter_day a').on('click', function() {
+
+        var sel_day = this.text
+        console.log("day selected: " + sel_day)
+        sel_args.day = sel_day;
+
+        $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
+        odPairLayerGroup.clearLayers();
+        rebuild(sel_args);
+
+    });
+
+
 
 })
 
@@ -159,8 +193,8 @@ function addRouteJson(sel_line, sel_dir) {
 
 function rebuild(args) {
     //clear previous orig and dest markers
-    origMarkersLayer.clearLayers();
-    destMarkersLayer.clearLayers();
+    //origMarkersLayer.clearLayers();
+    //destMarkersLayer.clearLayers();
     odPairLayerGroup.clearLayers();
 
     console.log(args);
