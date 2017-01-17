@@ -59,13 +59,14 @@ class Helper(object):
 
 
     @staticmethod
-    def query_map_data(rte='', dir=''):
+    def query_map_data(where):
         ret_val = []
         query_args = {}
-        where = ""
+        where = where
 
-        rte_filter = " r.rte = :rte "
+        """rte_filter = " r.rte = :rte "
         dir_filter = " r.dir = :dir "
+        day_filter = " r."
         
         def construct_where(string, param, filt_name):
             if not param:
@@ -89,7 +90,7 @@ class Helper(object):
             query_args[param[1]] = param[0]
             debug(query_args)
         if where:
-            where = " WHERE " + where
+            where = " WHERE " + where"""
         region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
         validate = " AND f.loc_validated='1' "
         not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
@@ -234,7 +235,7 @@ class Helper(object):
         debug(query_string)
 
         web_session = Session()
-        query = web_session.execute(query_string, query_args)
+        query = web_session.execute(query_string)
 
         RTE = 0
         RTE_DESC = 1
@@ -287,6 +288,77 @@ class Helper(object):
             ret_val.append(data)
         web_session.close()
         return ret_val
+    @staticmethod
+    def buildconditions(args):
+        where = ""
+        lookupwd = {
+        "Weekday": "(1,2,3,4,5)",
+        "Weekend": "(0,6)",
+        "Saturday": "(6)",
+        "Sunday": "(0)"
+        }
+
+        lookupvehicle = {
+        "MAX": "IN ('90','100','190','200','290')",
+        "WES": "IN ('203')",
+        "Bus": "NOT IN ('90','100','190','200','290','203')"
+        }
+
+        lookuprtetype = {
+        "MAX": "1",
+        "Bus Crosstown": "2",
+        "Bus Eastside Feeder": "3",
+        "Bus Westside Feeder": "4",
+        "Bus Radial": "5",
+        "WES": "6"
+        }
+
+        lookuptod = {
+        "Weekday Early AM": "1",
+        "Weekday AM Peak": "2",
+        "Weekday Midday": "3",
+        "Weekday PM Peak": "4",
+        "Weekday Night": "5",
+        "Weekend Morning": "6",
+        "Weekend Midday": "7",
+        "Weekend Night": "8"
+        }
+
+        lookupaddress = {
+        "Home": "1",
+        "Work": "2",
+        "School": "3",
+        "Recreation": "4",
+        "Shopping": "5",
+        "Personal business": "6",
+        "Visit family or friends": "7",
+        "Medical appointment": "8",
+        "Other": "9"
+        }
+
+        for key, value in args.items():
+            # app.logger.debug(key,value)
+            if not value: continue
+
+            if key == "rte" and value.isnumeric():
+                where += " AND f.rte='{0}'".format(value)
+
+            if key == "dir" and value.isnumeric():
+                where += " AND f.dir='{0}'".format(value)
+
+            if key == "day" and value in lookupwd:
+                where += " AND extract(dow from f._date) in {0}".format(lookupwd[value])
+
+            if key == "tod" and value in lookuptod:
+                where += " AND time_of_day='{0}'".format(lookuptod[value])
+
+            if key == "orig" and value in lookupaddress:
+                where += " AND f.q3_orig_type='{0}'".format(lookupaddress[value])
+
+            if key == "dest" and value in lookupaddress:
+                where += " AND f.q4_dest_type='{0}'".format(lookupaddress[value])
+
+        return where
 
     @staticmethod
     def query_route_data(user='', rte_desc='', dir_desc='', csv=False):
