@@ -147,7 +147,22 @@ $(document).ready(function() {
 
     });
 
+    $('#filter_origin a').on('click', function() {
 
+        var sel_orig = this.text
+        console.log("origin selected: " + sel_orig)
+        sel_args.orig = sel_orig;
+
+        $("#origin_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+        
+
+    });
 
 })
 
