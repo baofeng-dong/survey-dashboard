@@ -164,6 +164,23 @@ $(document).ready(function() {
 
     });
 
+    $('#filter_dest a').on('click', function() {
+
+        var sel_dest = this.text
+        console.log("destination selected: " + sel_dest);
+        sel_args.dest = sel_dest;
+
+        $("#dest_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+
+
+    });
+
 })
 
 
