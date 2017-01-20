@@ -1,7 +1,7 @@
 *.pyc
 *.*~
 *.swp
-*.wsgi
+surveydashboard.wsgi
 env/
 sql/
 config.py
