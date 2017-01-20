@@ -137,12 +137,32 @@ $(document).ready(function() {
         sel_args.day = sel_day;
 
         $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
-        odPairLayerGroup.clearLayers();
+        
         rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+        
 
     });
 
+    $('#filter_origin a').on('click', function() {
 
+        var sel_orig = this.text
+        console.log("origin selected: " + sel_orig)
+        sel_args.orig = sel_orig;
+
+        $("#origin_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+        
+
+    });
 
 })
 
@@ -315,19 +335,6 @@ function rebuildPath(args) {
             odPairLayerGroup.addLayer(pairPath);
             odPairLayerGroup.addLayer(orig_marker);
             odPairLayerGroup.addLayer(dest_marker);
-
-            /*odPairLayer.eachLayer(function (layer) {
-                layer.on('click', function(e) {
-                    var selected = e.target;
-                    selected.bringToFront();
-                    selected.setStyle(newStyle);
-                });
-            });*/
-            /*odPairLayerGroup.on('click', function(e) {
-                var layer = e.target;
-                layer.bringToFront();
-                layer.setStyle(newStyle);
-            });*/
             //adds odPairLayerGroup to mymap
             odPairLayerGroup.addTo(mymap);
         });
