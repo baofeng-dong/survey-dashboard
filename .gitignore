@@ -1,6 +1,7 @@
 *.pyc
 *.*~
 *.swp
+*.wsgi
 env/
 sql/
 config.py
