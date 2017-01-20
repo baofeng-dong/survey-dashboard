@@ -6,4 +6,5 @@ sql/
 config.py
 env2/
 dashboard/static/image/
+*.wsgi
 
