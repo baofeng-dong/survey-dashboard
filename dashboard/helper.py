@@ -64,75 +64,48 @@ class Helper(object):
         query_args = {}
         where = where
 
-        """rte_filter = " r.rte = :rte "
-        dir_filter = " r.dir = :dir "
-        day_filter = " r."
-        
-        def construct_where(string, param, filt_name):
-            if not param:
-                return string
-
-            if filt_name == "rte": filt = rte_filter
-            else: filt = dir_filter
-
-            if string:
-                return string + " AND " + filt
-            else:
-                return string + filt
-      
-        # build where clause
-        debug(where)
-        for param in [(rte, 'rte'),(dir, 'dir')]:
-            where = construct_where(where, param[0], param[1])
-            debug(where)
-            debug(param[0])
-            debug(param[1])
-            query_args[param[1]] = param[0]
-            debug(query_args)
-        if where:
-            where = " WHERE " + where"""
         region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
         validate = " AND f.loc_validated='1' "
         not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
         limit = "limit 2000;"
 
         query_string = """
-            select 
+            SELECT 
                 f.rte,
                 r.rte_desc,
                 f.dir,
                 r.dir_desc,
-                case
-                    when q1_satisfaction = '1' then 'Very satisfied'
-                    when q1_satisfaction = '3' then 'Somewhat satisfied'
-                    when q1_satisfaction = '4' then 'Neutral'
-                    when q1_satisfaction = '5' then 'Somewhat dissatisfied'
-                    when q1_satisfaction = '6' then 'Very dissatisfied'
-                    when q1_satisfaction = '7' then 'Do not know'
+                CASE
+                    WHEN q1_satisfaction = '1' THEN 'Very satisfied'
+                    WHEN q1_satisfaction = '3' THEN 'Somewhat satisfied'
+                    WHEN q1_satisfaction = '4' THEN 'Neutral'
+                    WHEN q1_satisfaction = '5' THEN 'Somewhat dissatisfied'
+                    WHEN q1_satisfaction = '6' THEN 'Very dissatisfied'
+                    WHEN q1_satisfaction = '7' THEN 'Do not know'
                     else                            ''
                 end as satisfaction,
                 case
-                    when q3_orig_type = '1' then 'Home'
-                    when q3_orig_type = '2' then 'Work'
-                    when q3_orig_type = '3' then 'School'
-                    when q3_orig_type = '4' then 'Recreation'
-                    when q3_orig_type = '5' then 'Shopping'
-                    when q3_orig_type = '6' then 'Personal business'
-                    when q3_orig_type = '7' then 'Visit family or friends'
-                    when q3_orig_type = '8' then 'Medical appointment'
-                    when q3_orig_type = '9' then 'Other'
+                    WHEN q3_orig_type = '1' THEN 'Home'
+                    WHEN q3_orig_type = '2' THEN 'Work'
+                    WHEN q3_orig_type = '3' THEN 'School'
+                    WHEN q3_orig_type = '4' THEN 'Recreation'
+                    WHEN q3_orig_type = '5' THEN 'Shopping'
+                    WHEN q3_orig_type = '6' THEN 'Personal business'
+                    WHEN q3_orig_type = '7' THEN 'Visit family or friends'
+                    WHEN q3_orig_type = '8' THEN 'Medical appointment'
+                    WHEN q3_orig_type = '9' THEN 'Other'
                     else                         ''
                 end as o_type,
                 case
-                    when q4_dest_type = '1' then 'Home'
-                    when q4_dest_type = '2' then 'Work'
-                    when q4_dest_type = '3' then 'School'
-                    when q4_dest_type = '4' then 'Recreation'
-                    when q4_dest_type = '5' then 'Shopping'
-                    when q4_dest_type = '6' then 'Personal business'
-                    when q4_dest_type = '7' then 'Visit family or friends'
-                    when q4_dest_type = '8' then 'Medical appointment'
-                    when q4_dest_type = '9' then 'Other'
+                    WHEN q4_dest_type = '1' THEN 'Home'
+                    WHEN q4_dest_type = '2' THEN 'Work'
+                    WHEN q4_dest_type = '3' THEN 'School'
+                    WHEN q4_dest_type = '4' THEN 'Recreation'
+                    WHEN q4_dest_type = '5' THEN 'Shopping'
+                    WHEN q4_dest_type = '6' THEN 'Personal business'
+                    WHEN q4_dest_type = '7' THEN 'Visit family or friends'
+                    WHEN q4_dest_type = '8' THEN 'Medical appointment'
+                    WHEN q4_dest_type = '9' THEN 'Other'
                     else                         ''
                 end as d_type,
                 f.q5_orig_lat as o_lat,
@@ -140,88 +113,95 @@ class Helper(object):
                 f.q6_dest_lat as d_lat,
                 f.q6_dest_lng as d_lng,
                 case
-                    when q7_travel_change = '1' then 'More'
-                    when q7_travel_change = '2' then 'Same'
-                    when q7_travel_change = '3' then 'Less'
-                    when q7_travel_change = '4' then 'Do not know'
+                    WHEN q7_travel_change = '1' THEN 'More'
+                    WHEN q7_travel_change = '2' THEN 'Same'
+                    WHEN q7_travel_change = '3' THEN 'Less'
+                    WHEN q7_travel_change = '4' THEN 'Do not know'
                     else                             ''
                 end as ride_change,
                 case
-                    when q18_ridership = '1' then 'Frequent rider'
-                    when q18_ridership = '2' then 'Regular rider'
-                    when q18_ridership = '3' then 'Occasional rider'
-                    when q18_ridership = '4' then 'Infrequent rider'
-                    when q18_ridership = '5' then 'Do not know'
+                    WHEN q18_ridership = '1' THEN 'Frequent rider'
+                    WHEN q18_ridership = '2' THEN 'Regular rider'
+                    WHEN q18_ridership = '3' THEN 'Occasional rider'
+                    WHEN q18_ridership = '4' THEN 'Infrequent rider'
+                    WHEN q18_ridership = '5' THEN 'Do not know'
                     else                          ''
                 end as ridership,
                 case
-                    when q19_ride_years = '1' then 'Less than 1 year'
-                    when q19_ride_years = '2' then '1 to 2 years'
-                    when q19_ride_years = '3' then '3 to 5 years'
-                    when q19_ride_years = '4' then '6 to 10 years'
-                    when q19_ride_years = '5' then 'Over 10 years'
-                    when q19_ride_years = '6' then 'Do not know'
+                    WHEN q19_ride_years = '1' THEN 'Less than 1 year'
+                    WHEN q19_ride_years = '2' THEN '1 to 2 years'
+                    WHEN q19_ride_years = '3' THEN '3 to 5 years'
+                    WHEN q19_ride_years = '4' THEN '6 to 10 years'
+                    WHEN q19_ride_years = '5' THEN 'Over 10 years'
+                    WHEN q19_ride_years = '6' THEN 'Do not know'
                     else                           ''
                 end as ride_years,
                 case
-                    when q20_approval = '1' then 'Strongly approve'
-                    when q20_approval = '2' then 'Somewhat approve'
-                    when q20_approval = '3' then 'Somewhat disapprove'
-                    when q20_approval = '4' then 'Strongly disapprove'
-                    when q20_approval = '5' then 'Do not know'
+                    WHEN q20_approval = '1' THEN 'Strongly approve'
+                    WHEN q20_approval = '2' THEN 'Somewhat approve'
+                    WHEN q20_approval = '3' THEN 'Somewhat disapprove'
+                    WHEN q20_approval = '4' THEN 'Strongly disapprove'
+                    WHEN q20_approval = '5' THEN 'Do not know'
                     else                         ''
                 end as job_approval,
                 case
-                    when q21_one_change = '1' then 'Frequency improved'
-                    when q21_one_change = '2' then 'Reliability improved'
-                    when q21_one_change = '3' then 'Service expanded'
-                    when q21_one_change = '4' then 'Routes go to more places'
-                    when q21_one_change = '5' then 'Stops closer to my origin/destination'
-                    when q21_one_change = '6' then 'Crowding less'
-                    when q21_one_change = '7' then 'Faster trip'
-                    when q21_one_change = '8' then 'Transfer less'
-                    when q21_one_change = '9' then 'Safer trip'
-                    when q21_one_change = '10' then 'Fare less expensive'
-                    when q21_one_change = '11' then 'Other'
-                    when q21_one_change = '12' then 'Nothing'
-                    when q21_one_change = '13' then 'Do not know'
+                    WHEN q21_one_change = '1' THEN 'Frequency improved'
+                    WHEN q21_one_change = '2' THEN 'Reliability improved'
+                    WHEN q21_one_change = '3' THEN 'Service expanded'
+                    WHEN q21_one_change = '4' THEN 'Routes go to more places'
+                    WHEN q21_one_change = '5' THEN 'Stops closer to my origin/destination'
+                    WHEN q21_one_change = '6' THEN 'Crowding less'
+                    WHEN q21_one_change = '7' THEN 'Faster trip'
+                    WHEN q21_one_change = '8' THEN 'Transfer less'
+                    WHEN q21_one_change = '9' THEN 'Safer trip'
+                    WHEN q21_one_change = '10' THEN 'Fare less expensive'
+                    WHEN q21_one_change = '11' THEN 'Other'
+                    WHEN q21_one_change = '12' THEN 'Nothing'
+                    WHEN q21_one_change = '13' THEN 'Do not know'
                     else                            ''
                 end as one_change,
-                coalesce(f.q24_zipcode, 10000),
+                coalesce(f.q24_zipcode::text, ''),
                 case
-                    when q25_age = '1' then 'Under 18'
-                    when q25_age = '2' then '18-24'
-                    when q25_age = '3' then '25-34'
-                    when q25_age = '4' then '35-44'
-                    when q25_age = '5' then '45-54'
-                    when q25_age = '6' then '55-64'
-                    when q25_age = '7' then '65 or more'
+                    WHEN q25_age = '1' THEN 'Under 18'
+                    WHEN q25_age = '2' THEN '18-24'
+                    WHEN q25_age = '3' THEN '25-34'
+                    WHEN q25_age = '4' THEN '35-44'
+                    WHEN q25_age = '5' THEN '45-54'
+                    WHEN q25_age = '6' THEN '55-64'
+                    WHEN q25_age = '7' THEN '65 or more'
                     else                    ''
                 end as age,
                 case 
-                    when q26_gender = '1' then 'Female'
-                    when q26_gender = '2' then 'Male'
-                    when q26_gender = '3' then 'Transgender'
-                    when q26_gender = '4' then 'Other'
+                    WHEN q26_gender = '1' THEN 'Female'
+                    WHEN q26_gender = '2' THEN 'Male'
+                    WHEN q26_gender = '3' THEN 'Transgender'
+                    WHEN q26_gender = '4' THEN 'Other'
                     else                       ''
                 end as gender,
                 case
-                    when q29_income = '1' then 'Under $10,000'
-                    when q29_income = '2' then '$10,000-$19,999'
-                    when q29_income = '3' then '$20,000-$29,999'
-                    when q29_income = '4' then '$30,000-$39,999'
-                    when q29_income = '5' then '$40,000-$49,999'
-                    when q29_income = '6' then '$50,000-$59,999'
-                    when q29_income = '7' then '$60,000-$69,999'
-                    when q29_income = '8' then '$70,000-$79,999'
-                    when q29_income = '9' then '$80,000-$89,999'
-                    when q29_income = '10' then '$90,000-$99,999'
-                    when q29_income = '11' then '$100,000-$124,999'
-                    when q29_income = '12' then '$125,000-$150,000'
-                    when q29_income = '13' then 'Over $150,000'
-                    when q29_income = '14' then 'Do not know'
+                    WHEN q29_income = '1' THEN 'Under $10,000'
+                    WHEN q29_income = '2' THEN '$10,000-$19,999'
+                    WHEN q29_income = '3' THEN '$20,000-$29,999'
+                    WHEN q29_income = '4' THEN '$30,000-$39,999'
+                    WHEN q29_income = '5' THEN '$40,000-$49,999'
+                    WHEN q29_income = '6' THEN '$50,000-$59,999'
+                    WHEN q29_income = '7' THEN '$60,000-$69,999'
+                    WHEN q29_income = '8' THEN '$70,000-$79,999'
+                    WHEN q29_income = '9' THEN '$80,000-$89,999'
+                    WHEN q29_income = '10' THEN '$90,000-$99,999'
+                    WHEN q29_income = '11' THEN '$100,000-$124,999'
+                    WHEN q29_income = '12' THEN '$125,000-$150,000'
+                    WHEN q29_income = '13' THEN 'Over $150,000'
+                    WHEN q29_income = '14' THEN 'Do not know'
                     else                        ''
-                end as income
+                end as income,
+                CASE
+                    WHEN trunc(date_part('hour'::text, f._end)) >= 6::double precision AND trunc(date_part('hour'::text, f._end)) <= 8::double precision THEN 'AM Peak'::text
+                    WHEN trunc(date_part('hour'::text, f._end)) >= 9::double precision AND trunc(date_part('hour'::text, f._end)) <= 14::double precision THEN 'Midday'::text
+                    WHEN trunc(date_part('hour'::text, f._end)) >= 15::double precision AND trunc(date_part('hour'::text, f._end)) <= 18::double precision THEN 'PM Peak'::text
+                    ELSE 'Evening'::text
+                END AS time_of_day,
+                to_char(f._date, 'Mon DD YYYY') as _date
             from odk.fall_survey_2016_view f
                 join odk.rte_lookup r
                 on f.rte::integer = r.rte and f.dir::integer = r.dir """
@@ -257,6 +237,8 @@ class Helper(object):
         AGE = 17
         GENDER = 18
         INCOME = 19
+        TOD = 20
+        DATE = 21
 
 
         # each record will be converted as json
@@ -284,6 +266,8 @@ class Helper(object):
             data['age'] = record[AGE]
             data['gender'] = record[GENDER]
             data['income'] = record[INCOME]
+            data['time_of_day'] = record[TOD]
+            data['date'] = record[DATE]
 
             ret_val.append(data)
         web_session.close()
@@ -402,19 +386,19 @@ class Helper(object):
             limit = ";"
 
         query_string = """
-            select 
+            SELECT 
                 r.rte_desc,
                 r.dir_desc,
                 f._date, 
                 date_trunc('second',f._end) as _time,
                 s.name as user, 
                 case
-                    when q1_satisfaction = '1' then 'Very satisfied'
-                    when q1_satisfaction = '3' then 'Somewhat satisfied'
-                    when q1_satisfaction = '4' then 'Neutral'
-                    when q1_satisfaction = '5' then 'Somewhat dissatisfied'
-                    when q1_satisfaction = '6' then 'Very dissatisfied'
-                    when q1_satisfaction = '7' then 'Do not know'
+                    WHEN q1_satisfaction = '1' THEN 'Very satisfied'
+                    WHEN q1_satisfaction = '3' THEN 'Somewhat satisfied'
+                    WHEN q1_satisfaction = '4' THEN 'Neutral'
+                    WHEN q1_satisfaction = '5' THEN 'Somewhat dissatisfied'
+                    WHEN q1_satisfaction = '6' THEN 'Very dissatisfied'
+                    WHEN q1_satisfaction = '7' THEN 'Do not know'
                 end as satisfaction,
                 coalesce(f.q2_satis_comments,'')
             from odk.fall_survey_2016_view f
