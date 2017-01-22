@@ -76,8 +76,9 @@ $(document).ready(function() {
 
         if (this.text == "All") {
             //resert direction
-            //hide direction dropdown
-            $(".direction_cls").hide();
+            //show directions even the select is all
+            $(".direction_cls").show();
+            sel_args.rte = '';
         }
         else {
             //update direction dropdown with correct names
@@ -102,7 +103,9 @@ $(document).ready(function() {
 
         rebuild(sel_args);
         routeLayer.clearLayers();
-        addRouteJson(sel_line,0);
+        if (sel_args.rte) {
+            addRouteJson(sel_line,0);
+        }
 
     });
 
