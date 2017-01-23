@@ -184,6 +184,28 @@ $(document).ready(function() {
 
     });
 
+    $('#filter_tod a').on('click', function() {
+
+        var sel_tod = this.text
+        console.log("time of day selected: " + sel_tod);
+        if (sel_tod == 'All') {
+            sel_args.tod = '';
+        }
+        else {
+            sel_args.tod = sel_tod;
+        }
+
+        $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+
+
+    });
+
 })
 
 
@@ -206,7 +228,6 @@ function addRouteJson(sel_line, sel_dir) {
 
     console.log(sel_line);
     console.log(sel_dir);
-
 
     var routeJson = sel_line + '_' + sel_dir + '_routes.geojson';
     console.log(routeJson);
