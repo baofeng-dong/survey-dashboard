@@ -67,7 +67,7 @@ class Helper(object):
         region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
         validate = " AND f.loc_validated='1' "
         not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null "
-        limit = "limit 3000;"
+        limit = "limit 2000;"
 
         query_string = """
             SELECT 
@@ -329,6 +329,7 @@ class Helper(object):
                 where += " AND extract(dow from f._date) in {0}".format(lookupwd[value])
 
             if key == "tod" and isinstance(value, str):
+                debug(isinstance(value, str))
                 where += " AND f.time_of_day='{0}'".format(value)
 
             if key == "orig" and value in lookupaddress:
