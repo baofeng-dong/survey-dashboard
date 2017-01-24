@@ -103,7 +103,7 @@ $(document).ready(function() {
 
         rebuild(sel_args);
         routeLayer.clearLayers();
-        if (sel_args.rte) {
+        if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
         }
 
@@ -121,14 +121,19 @@ $(document).ready(function() {
             sel_dir = '';
             sel_args.dir = '';
         } 
+        console.log(sel_dir);
+
         origMarkersLayer.clearLayers();
         destMarkersLayer.clearLayers();
         odPairLayerGroup.clearLayers();
-        //rebuild({'rte':sel_line, 'dir':sel_dir});
-        rebuildPath(sel_args);
-
         console.log(sel_args);
-        // add addRouteJson function to here
+
+        if (sel_args.rte && sel_args.dir) {
+            rebuildPath(sel_args);
+        }
+
+        rebuild(sel_args);
+
         routeLayer.clearLayers();
         addRouteJson(sel_line,sel_dir);
     });
@@ -227,6 +232,11 @@ $(document).ready(function() {
 function addRouteJson(sel_line, sel_dir) {
 
     console.log(sel_line);
+    console.log(sel_dir);
+
+    if (sel_dir === undefined) {
+        sel_dir = 0;
+    }
     console.log(sel_dir);
 
     var routeJson = sel_line + '_' + sel_dir + '_routes.geojson';
