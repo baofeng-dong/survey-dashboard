@@ -328,8 +328,8 @@ class Helper(object):
             if key == "day" and value in lookupwd:
                 where += " AND extract(dow from f._date) in {0}".format(lookupwd[value])
 
-            if key == "tod" and isinstance(value, str):
-                debug(isinstance(value, str))
+            if key == "tod":
+                #debug(isinstance(value, str))
                 where += " AND f.time_of_day='{0}'".format(value)
 
             if key == "orig" and value in lookupaddress:
