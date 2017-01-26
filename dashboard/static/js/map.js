@@ -64,6 +64,39 @@ $(document).ready(function() {
     minZoom: 11
     }).addTo(mymap);
 
+    var geocoder = L.control.geocoder('mapzen-JfUFYiC', geocoderOptions);
+    var geocoderOptions = {
+        autocomplete: true,
+        pointIcon: 'https://cdn2.iconfinder.com/data/icons/travel-map-and-location/64/geo_location-128.png',
+        position: 'topleft',
+        expanded: true,
+        panToPoint: true,
+        placeholder: 'Search nearby',
+        markers: true,
+        focus: [45.48661, -122.65343],
+        title: 'Address Search'
+    }
+
+
+    var markeroptions = {
+        icon: myIcon,
+        clickable: true,
+        riseOnHover: true
+    }
+
+    var myIcon = L.icon({
+        iconUrl: 'https://cdn2.iconfinder.com/data/icons/travel-map-and-location/64/geo_location-128.png',
+        iconSize: [38, 95],
+        iconAnchor: [22, 94],
+        popupAnchor: [-3, -76],
+    });
+
+    geocoder.setPosition('topright');
+
+
+    //add geocoder to mymap
+    geocoder.addTo(mymap);
+
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
 
