@@ -5,7 +5,7 @@ html, body {
 #content {
     min-height: 100%;
     overflow: auto;
-    padding-bottom: 180px; /* must be same height as the footer */
+    padding-bottom: 60px; /* must be same height as the footer */
 }
 
 body {
@@ -95,10 +95,10 @@ ul.list--padding > li {
 /* Footer styling */
 footer {
     position: relative;
-    margin-top: -180px; /* negative value of footer height */
-    height: 180px;
+    margin-top: -60px; /* negative value of footer height */
+    height: 60px;
     clear: both;
-    padding: 25px;
+    padding: 10px;
     font-size: .8em;
 } 
 
@@ -167,7 +167,14 @@ table {
     width: auto;
 }
 
-#surveyors, #line-chart {
+#surveyors {
+    margin-top: 20px;
+    margin-left: 20px;
+    max-width: 1000px;
+    width: auto;
+}
+
+#line-chart {
     margin-top: 20px;
     margin-left: 20px;
     max-width: 1000px;
