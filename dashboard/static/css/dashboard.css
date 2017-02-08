@@ -48,9 +48,20 @@ body {
     color: inherit;
 }
 
-.navbar-nav > li > a:hover, .navbar-nav > li.nav-active  {
+.navbar-nav > li > a:hover, .navbar-nav > li.nav-active, 
+.navbar .navbar-nav .open .dropdown-menu>li>a:hover  {
     background-color: #fff;
     color: #000;
+}
+
+.navbar .navbar-nav .open .dropdown-menu>li>a, .navbar .navbar-nav .open .dropdown-menu {
+    background-color: #084c8d;
+    color: white;
+  }
+
+ul.dropdown-menu {
+    width: 80px !important;
+
 }
 
 .navbar .icon-bar {
@@ -151,8 +162,12 @@ table {
     margin-top: 10px;
 }
 
-#surveyor-intro, #data-intro {
+#surveyor-intro, #data-intro, #progress-intro, #progress {
     margin-left: 20px;
+}
+
+#bus-progress {
+    padding-left: 20px;
 }
 
 #download-button, #select-date {
