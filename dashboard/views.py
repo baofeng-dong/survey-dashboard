@@ -28,6 +28,10 @@ def index():
 def intro():
     return render_template("introduction.html")
 
+@app.route('/progress')
+def progress():
+    return render_template("progress.html")
+
 @app.route('/results')
 def result():
     return render_template("results.html")
