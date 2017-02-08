@@ -49,8 +49,15 @@
         <ul class="nav navbar-nav navbar-right">
           <li><a href="{{ url_for('index') }}"><b>Home</b></a></li>
           <li><a href="{{ url_for('index') }}introduction"><b>Introduction</b></a></li>
-          <li><a href="{{ url_for('index') }}data"><b>Data</b></a></li>
-          <li><a href="{{ url_for('index') }}surveyors"><b>Surveyor</b></a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Survey</b><b class="caret"></b></a>
+            <ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="menu1">
+              <li role="presentation"><a role="menuitem" href="{{ url_for('index') }}data"><b>Data</b></a></li>
+              <li role="presentation"><a role="menuitem" href="{{ url_for('index') }}progress"><b>Progress</b></a></li>
+              <li role="presentation"><a role="menuitem" href="{{ url_for('index') }}surveyors"><b>Surveyor</b></a></li>
+            </ul>
+          </li>
+          
           <li><a href="{{ url_for('index') }}results"><b>Results</b></a></li>
           <li><a href="{{ url_for('index') }}map"><b>Map</b></a></li>
         </ul>
