@@ -42,15 +42,15 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="http://trimet.org/"><img src="{{ url_for('index') }}static/image/trimet-logo.svg" with="30" height="30" class="d-inline-block align-middle" alt=""></a>
+        <a class="navbar-brand-tm navbar-left" href="http://trimet.org/"><img src="{{ url_for('index') }}static/image/trimet-logo.svg" height="30" class="inline-block align-middle" alt=""></a>
       </div>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="{{ url_for('index') }}"><b>Home</b></a></li>
-          <li><a href="{{ url_for('index') }}introduction"><b>Introduction</b></a></li>
+          <li><a class="my-text" href="{{ url_for('index') }}"><b>Home</b></a></li>
+          <li><a class="my-text" href="{{ url_for('index') }}introduction"><b>Introduction</b></a></li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Survey</b><b class="caret"></b></a>
+            <a class="my-text" href="#" class="dropdown-toggle" data-toggle="dropdown"><b>Survey</b><b class="caret"></b></a>
             <ul class="dropdown-menu dropdown-menu-left" role="menu" aria-labelledby="menu1">
               <li role="presentation"><a role="menuitem" href="{{ url_for('index') }}data"><b>Data</b></a></li>
               <li role="presentation"><a role="menuitem" href="{{ url_for('index') }}progress"><b>Progress</b></a></li>
@@ -58,8 +58,8 @@
             </ul>
           </li>
           
-          <li><a href="{{ url_for('index') }}results"><b>Results</b></a></li>
-          <li><a href="{{ url_for('index') }}map"><b>Map</b></a></li>
+          <li><a class="my-text" href="{{ url_for('index') }}results"><b>Results</b></a></li>
+          <li><a class="my-text" href="{{ url_for('index') }}map"><b>Map</b></a></li>
         </ul>
       </div>
       
@@ -75,12 +75,13 @@
 </div>
 
 <footer>
-  <div class="container text-center">
+  <div class="navbar-tm navbar-default navbar-fixed-bottom ">
+  <div class="container-tm text-center">
     <small class="text-muted">
       TriMet Fall 2016 On-board Customer Survey
-      <br>
-      Powered by <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> and <a href="http://flask.pocoo.org/" target="_blank">Python Flask</a> – <a href=http://trimet.org/research/><strong>Learn More</strong></a>
+      &nbsp <i>Powered by <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a> and <a href="http://flask.pocoo.org/" target="_blank">Python Flask</a> – <a href=http://trimet.org/research/><strong>Learn More</strong></a></i>
     </small>
+  </div>
   </div>
 </footer>
 
