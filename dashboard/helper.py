@@ -322,6 +322,13 @@ class Helper(object):
         "Do not know" : "4"
         }
 
+        lookupsatisfaction = {
+        "Satisfied": ("1","3"),
+        "Neutral": "('4')",
+        "Not satisfied": ("5","6"),
+        "Do not know": "('7')"
+        }
+
         for key, value in args.items():
             # app.logger.debug(key,value)
             if not value: continue
@@ -347,6 +354,9 @@ class Helper(object):
 
             if key == "travel" and value in lookuptravel:
                 where += " AND f.q7_travel_change='{0}'".format(lookuptravel[value])
+
+            if key == "satisfaction" and value in lookupsatisfaction:
+                where += " AND f.q1_satisfaction in {0}".format(lookupsatisfaction[value])
 
         return where
 
