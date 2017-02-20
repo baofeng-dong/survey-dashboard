@@ -8,7 +8,8 @@
         tod : "",
         orig : "",
         dest : "",
-        travel: ""
+        travel: "",
+        satisfaction: ""
     }
 
     var dir_lookup = {};
@@ -257,6 +258,28 @@ $(document).ready(function() {
         }
 
         $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+
+
+    });
+
+    $('#filter_satisfaction a').on('click', function() {
+
+        var sel_satisfaction = this.text
+        console.log("satisfaction selected: " + sel_satisfaction);
+        if (sel_satisfaction == 'All') {
+            sel_args.satisfaction = '';
+        }
+        else {
+            sel_args.satisfaction = sel_satisfaction;
+        }
+
+        $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         rebuild(sel_args);
         if (sel_args.rte && sel_args.dir) {
