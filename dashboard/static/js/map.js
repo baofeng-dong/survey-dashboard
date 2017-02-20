@@ -7,7 +7,8 @@
         day : "",
         tod : "",
         orig : "",
-        dest : ""
+        dest : "",
+        travel: ""
     }
 
     var dir_lookup = {};
@@ -234,6 +235,28 @@ $(document).ready(function() {
         }
 
         $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
+        
+        rebuild(sel_args);
+        if (sel_args.rte && sel_args.dir) {
+            odPairLayerGroup.clearLayers();
+            rebuildPath(sel_args);
+        }
+
+
+    });
+
+    $('#filter_travel a').on('click', function() {
+
+        var sel_travel = this.text
+        console.log("travel change selected: " + sel_travel);
+        if (sel_travel == 'All') {
+            sel_args.travel = '';
+        }
+        else {
+            sel_args.travel = sel_travel;
+        }
+
+        $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
         
         rebuild(sel_args);
         if (sel_args.rte && sel_args.dir) {
