@@ -99,6 +99,8 @@ $(document).ready(function() {
     //add geocoder to mymap
     geocoder.addTo(mymap);
 
+    toggle_tb();
+
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
 
@@ -481,6 +483,30 @@ function removeHighlight() {
     }
 }
 
+//function for expanding/collapsing div content
+
+function toggle_tb(){
+    var div = $("#control-section");
+    $('#toggle').unbind("click").click(function(){
+         //div.slideToggle('fast');
+         
+         if ($(this).attr('value') == 'Hide') {
+            console.log(this + 'hide selected')
+            div.animate({
+                height: '0%'
+                }).hide()
+            $(this).attr('value','Show')
+            
+        } else {
+            console.log(this + 'show selected')
+            div.animate({
+                height: '100%'
+                }).show()
+            $(this).attr('value','Hide')
+        
+            }
+       });
+}
 
 //add label to map
 function addLabel() {
