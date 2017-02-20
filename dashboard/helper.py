@@ -315,6 +315,13 @@ class Helper(object):
         "Other": "9"
         }
 
+        lookuptravel = {
+        "More" : "1",
+        "Same" : "2",
+        "Less": "3",
+        "Do not know" : "4"
+        }
+
         for key, value in args.items():
             # app.logger.debug(key,value)
             if not value: continue
@@ -337,6 +344,9 @@ class Helper(object):
 
             if key == "dest" and value in lookupaddress:
                 where += " AND f.q4_dest_type='{0}'".format(lookupaddress[value])
+
+            if key == "travel" and value in lookuptravel:
+                where += " AND f.q7_travel_change='{0}'".format(lookuptravel[value])
 
         return where
 
