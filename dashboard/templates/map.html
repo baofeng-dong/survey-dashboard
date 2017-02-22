@@ -15,15 +15,12 @@
     <p>Note: select route, direction, origin/destination, day of week, and time of day to view origin and destination data.</p>
 
 </div>
-<table id="select-table" height="100%">
+<table id="select-table">
   <tr id="menu-dd">
-    <td style="padding-right:1em">
-      <strong>Route:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 1em" width="20%">
       <div class="btn-group" role="form">
         <button id="line_btn" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-        All    
+        Route    
         <span class="caret"></span>
         </button>
         <ul id="filter_line" class="dropdown-menu scrollable-menu" role="menu">
@@ -36,14 +33,12 @@
         </ul>
       </div>
     </td>
-    <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Day of Week:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
       <div class="dropdown">
         <button id="day_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Day of Week
         <span class="caret"></span></button>
         <ul id="filter_day" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Day of Week</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">Weekday</a></li>
             <li><a href="#">Weekend</a></li>
@@ -52,14 +47,12 @@
         </ul>
       </div>
     </td>
-    <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Origin:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
       <div class="dropdown">
-        <button id="origin_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Origin Type
+        <button id="origin_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Origin
         <span class="caret"></span></button>
         <ul id="filter_origin" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Origin</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
             <li><a href="#">Home</a></li>
@@ -74,14 +67,12 @@
         </ul>
       </div>
     </td>
-    <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Travel Change:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="30%">
       <div class="dropdown">
         <button id="travel_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Travel Change
         <span class="caret"></span></button>
         <ul id="filter_travel" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Travel Change</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
             <li><a href="#">More</a></li>
@@ -93,13 +84,10 @@
     </td>
   </tr>
   <tr id="menu-dd">
-  <td class="direction_cls" style="padding-right:1em; display:show">
-    <strong>Direction:</strong>
-  </td>
-    <td class="direction_cls" style="display: show;">
+    <td class="direction_cls" style="display: show; padding-left: 1em" width="20%">
       <div class="btn-group">
         <button id="dir_btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-        All    
+        Direction    
         <span class="caret"></span>
         </button>
         <ul id="filter_dir" class="dropdown-menu" role="menu">
@@ -111,14 +99,12 @@
         </ul>
       </div>
     </td>
-        <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Time of Day:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
       <div class="dropdown">
         <button id="tod_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Time of Day
         <span class="caret"></span></button>
         <ul id="filter_tod" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Time of Day</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
             <li><a href="#">AM Peak</a></li>
@@ -128,14 +114,12 @@
         </ul>
       </div>
     </td>
-    <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Destination:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
       <div class="dropdown">
-        <button id="dest_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Destination Type
+        <button id="dest_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Destination
         <span class="caret"></span></button>
         <ul id="filter_dest" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Destination</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
             <li><a href="#">Home</a></li>
@@ -150,14 +134,12 @@
         </ul>
       </div>
     </td>
-    <td style="padding-left: 2em; padding-right: 1em">
-      <strong>Satisfaction:</strong>
-    </td>
-    <td>
+    <td style="padding-left: 4em; padding-right: 1em" width="30%">
       <div class="dropdown">
         <button id="satisfaction_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Satisfaction
         <span class="caret"></span></button>
         <ul id="filter_satisfaction" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Satisfaction</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
             <li><a href="#">Satisfied</a></li>
