@@ -12,6 +12,10 @@
         satisfaction: ""
     }
 
+    //creates a list to store origin and destination latlng objects
+    var olatlngList = [];
+    var dlatlngList = [];
+
     var dir_lookup = {};
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
@@ -348,6 +352,7 @@ function rebuild(args) {
     //origMarkersLayer.clearLayers();
     //destMarkersLayer.clearLayers();
     odPairLayerGroup.clearLayers();
+    //origHeat.remove();
 
     console.log(args);
 
@@ -379,8 +384,13 @@ function rebuild(args) {
 
 
             // lat and lng for orig and dest markers
-            var olatlng = L.latLng([o_lat,o_lng]);
-            var dlatlng = L.latLng([d_lat,d_lng]);
+            var olatlng = L.latLng(o_lat,o_lng);
+            var dlatlng = L.latLng(d_lat,d_lng);
+
+            //adds origin and dest objects to their corresponding lists
+            olatlngList.push([o_lat,o_lng]);
+            dlatlngList.push([d_lat,d_lng]);
+
             //defines orig marker
             var orig_marker = L.circleMarker(olatlng, omarkerStyle).bindPopup(orig_popup, {showOnMouseOver:true});
             //defines dest marker
@@ -389,9 +399,17 @@ function rebuild(args) {
             odPairLayerGroup.addLayer(orig_marker);
             odPairLayerGroup.addLayer(dest_marker);
             // add odPairLayerGroup to mymap
-            odPairLayerGroup.addTo(mymap);
+            //odPairLayerGroup.addTo(mymap);
 
         });
+        console.log(olatlngList.length);
+        console.log(dlatlngList);
+        
+        /*var origHeat = L.heatLayer(olatlngList,{
+            radius: 25,
+            blur: 15, 
+            maxZoom: 17
+        }).addTo(mymap);*/
 
     });
     addLabel();
