@@ -113,6 +113,9 @@ $(document).ready(function() {
         console.log(sel_line);
         sel_args.rte = sel_line;
         sel_dir = '';
+        console.log(sel_dir);
+        sel_args.dir = sel_dir;
+        console.log(sel_args);
         $("#line_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         if (this.text == "All") {
@@ -399,11 +402,11 @@ function rebuild(args) {
             odPairLayerGroup.addLayer(orig_marker);
             odPairLayerGroup.addLayer(dest_marker);
             // add odPairLayerGroup to mymap
-            //odPairLayerGroup.addTo(mymap);
+            odPairLayerGroup.addTo(mymap);
 
         });
-        console.log(olatlngList.length);
-        console.log(dlatlngList);
+        //console.log(olatlngList.length);
+        //console.log(dlatlngList);
         
         /*var origHeat = L.heatLayer(olatlngList,{
             radius: 25,
