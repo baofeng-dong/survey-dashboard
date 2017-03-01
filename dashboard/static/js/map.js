@@ -13,8 +13,8 @@
     }
 
     //creates a list to store origin and destination latlng objects
-    var olatlngList = [];
-    var dlatlngList = [];
+    var originList = [];
+    var destinationList = [];
 
     var dir_lookup = {};
     // creates layers for orig and dest markers
@@ -26,6 +26,8 @@
     var odPairLayerGroup = new L.FeatureGroup();
     //create layer of transit routes layer
     var routeLayer = new L.FeatureGroup();
+    //create origin points heat layergroup
+    var originHeatGroup = new L.FeatureGroup();
 
     var hasLegend = false;
     var highLight = null;
@@ -108,6 +110,7 @@ $(document).ready(function() {
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
 
+
     $('#filter_line a').on('click', function() {
         sel_line = $(this).attr('rte');
         console.log(sel_line);
@@ -145,7 +148,13 @@ $(document).ready(function() {
         }
 
 
-        rebuild(sel_args);
+        //rebuild(sel_args);
+        buildOdPoints(sel_args);
+        console.log(originList);
+
+        //add originHeatMap to mymap
+        addOriginHeatMap(originList);
+
         routeLayer.clearLayers();
         if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
@@ -315,8 +324,35 @@ $(document).ready(function() {
 
     console.log(dir_lookup);
 
-// add route GeoJson to map based on sel_line and sel_dir
+//add origin points heatmap to mymap
+function addOriginHeatMap(originList) {
+    originHeatGroup.clearLayers();
+    var originHeat = L.heatLayer(originList,{
+        radius: 25,
+        maxZoom:16
+    });
 
+    console.log("L.heatLayer: ", L.heatLayer);
+    console.log(originHeat);
+    originHeatGroup.addLayer(originHeat);
+    //add origin points heatmap to mymap
+    originHeatGroup.addTo(mymap);
+}
+
+//add destination points heatmap to mymap
+function addDestHeatMap(destinationList) {
+    var destHeat = L.heatLayer(destinationList,{
+        radius:25,
+        maxZoom:16
+    });
+
+    console.log("L.heatLayer: ", L.heatLayer);
+    console.log(destHeat);
+    //add origin points heatmap to mymap
+    destHeat.addTo(mymap);
+}
+
+// add route GeoJson to map based on sel_line and sel_dir
 function addRouteJson(sel_line, sel_dir) {
 
     console.log(sel_line);
@@ -390,10 +426,6 @@ function rebuild(args) {
             var olatlng = L.latLng(o_lat,o_lng);
             var dlatlng = L.latLng(d_lat,d_lng);
 
-            //adds origin and dest objects to their corresponding lists
-            olatlngList.push([o_lat,o_lng]);
-            dlatlngList.push([d_lat,d_lng]);
-
             //defines orig marker
             var orig_marker = L.circleMarker(olatlng, omarkerStyle).bindPopup(orig_popup, {showOnMouseOver:true});
             //defines dest marker
@@ -405,17 +437,40 @@ function rebuild(args) {
             odPairLayerGroup.addTo(mymap);
 
         });
-        //console.log(olatlngList.length);
-        //console.log(dlatlngList);
-        
-        /*var origHeat = L.heatLayer(olatlngList,{
-            radius: 25,
-            blur: 15, 
-            maxZoom: 17
-        }).addTo(mymap);*/
 
     });
     addLabel();
+}
+
+//to build the origin and destination points arrays
+function buildOdPoints(args) {
+
+    odPairLayerGroup.clearLayers();
+    console.log(args);
+
+    $.getJSON('map/_query', args, function(data) {
+
+        //retrive origin and destination lat and lng
+
+        console.log(data);
+
+        $(data.data).each(function(index, item) {
+            // get origin lat and long from data.data json
+            var o_lat = item.o_lat;
+            var o_lng = item.o_lng;
+            // get destination lat and long
+            var d_lat = item.d_lat;
+            var d_lng = item.d_lng;
+
+            //adds origin and dest objects to their corresponding lists
+            originList.push([o_lat, o_lng]);
+            destinationList.push([d_lat, d_lng]);
+
+        });
+
+        return destinationList, originList;
+
+    });
 }
 
 //to add path between origin and destination points
