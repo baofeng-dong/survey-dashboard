@@ -105,7 +105,17 @@ $(document).ready(function() {
     //add geocoder to mymap
     geocoder.addTo(mymap);
 
+    //set mapview checkbox for point map true
+    //$('input.checkview')[0].checked = true;
+
+    $('input[type="checkbox"]').on('change', function() {
+        $('input[type="checkbox"]').not(this).prop('checked', false);
+    });
+
     toggle_tb();
+
+    generateOriginHeatmap();
+
 
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
@@ -148,12 +158,16 @@ $(document).ready(function() {
         }
 
 
-        //rebuild(sel_args);
+        rebuild(sel_args);
         buildOdPoints(sel_args);
         console.log(originList);
 
-        //add originHeatMap to mymap
-        addOriginHeatMap(originList);
+        /*if ($('input.checkview')[1].checked) {
+            resetLayers();
+            //add originHeatMap to mymap
+            addOriginHeatMap(originList);
+        }*/
+
 
         routeLayer.clearLayers();
         if (sel_line && sel_dir !== null) {
@@ -176,9 +190,7 @@ $(document).ready(function() {
         } 
         console.log(sel_dir);
 
-        origMarkersLayer.clearLayers();
-        destMarkersLayer.clearLayers();
-        odPairLayerGroup.clearLayers();
+        resetLayers();
         console.log(sel_args);
 
         if (sel_args.rte && sel_args.dir) {
@@ -323,6 +335,13 @@ $(document).ready(function() {
     });
 
     console.log(dir_lookup);
+
+//clear all layers
+function resetLayers() {
+    origMarkersLayer.clearLayers();
+    destMarkersLayer.clearLayers();
+    odPairLayerGroup.clearLayers();
+}
 
 //add origin points heatmap to mymap
 function addOriginHeatMap(originList) {
@@ -559,8 +578,18 @@ function removeHighlight() {
     }
 }
 
-//function for expanding/collapsing div content
+function generateOriginHeatmap() {
+    $('#origin-button').on('click', '#toggle', function(){
+    console.log(this.value);
 
+    resetLayers();
+    console.log("reset points layers!")
+    addOriginHeatMap(originList);
+    console.log("added origin points heatmap!")
+    });
+}
+
+//function for expanding/collapsing div content
 function toggle_tb(){
     var div = $("#control-section");
     $('#toggle').unbind("click").click(function(){
