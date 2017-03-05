@@ -3,18 +3,43 @@
 
 {% block content %}
 
-
 <div id="button-header">
     <input type="button"  value="Hide" id="toggle">
 </div>
+
 <div id="control-section">
 <!-- dropdowns that trigger ajax call to update table based on selection -->
 <div id="map-select">
 <div id="map-intro">
     <h4><b>Map Dashboard</b></h4>
     <p>Note: select route, direction, origin/destination, day of week, and time of day to view origin and destination data.</p>
+</div>
+
+<div id="map-view">
+<!--<label>Select Map View</label>
+
+  <table class="fixed" width="100%">
+    <col width="100%"/>
+
+    <tr>
+      <td><input class = "checkview" type="checkbox" name="mapview" value="points" checked="checked">Point Map</td>
+    </tr>
+    <tr>
+      <td><input class = "checkview" type="checkbox" name="mapview" value="origin-heat">Origin Heatmap</td>
+    </tr>
+        <tr>
+      <td><input class = "checkview" type="checkbox" name="mapview" value="dest-heat">Destination Heatmap</td>
+    </tr>
+  </table>-->
+  <div id="origin-button">
+    <input type="button"  value="Origin Heatmap" id="toggle">
+  </div>
+    <div id="dest-button">
+    <input type="button"  value="Destination Heatmap" id="toggle">
+  </div>
 
 </div>
+
 <table id="select-table">
   <tr id="menu-dd">
     <td style="padding-left: 1em" width="20%">
@@ -153,7 +178,6 @@
 </table>
 </div>
 </div>
-
 
 <!--<div id="map-view">
 
