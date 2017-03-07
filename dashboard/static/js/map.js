@@ -26,8 +26,9 @@
     var odPairLayerGroup = new L.FeatureGroup();
     //create layer of transit routes layer
     var routeLayer = new L.FeatureGroup();
-    //create origin points heat layergroup
+    //create origin and destination points heat layergroups
     var originHeatGroup = new L.FeatureGroup();
+    var destHeatGroup = new L.FeatureGroup();
 
     var hasLegend = false;
     var highLight = null;
@@ -71,6 +72,7 @@ $(document).ready(function() {
     maxZoom: 18,
     minZoom: 11
     }).addTo(mymap);
+    console.log(mymap);
 
     var geocoder = L.control.geocoder('mapzen-JfUFYiC', geocoderOptions);
     var geocoderOptions = {
@@ -84,14 +86,11 @@ $(document).ready(function() {
         focus: [45.48661, -122.65343],
         title: 'Address Search'
     }
-
-
     var markeroptions = {
         icon: myIcon,
         clickable: true,
         riseOnHover: true
     }
-
     var myIcon = L.icon({
         iconUrl: 'https://cdn2.iconfinder.com/data/icons/travel-map-and-location/64/geo_location-128.png',
         iconSize: [38, 95],
@@ -101,21 +100,20 @@ $(document).ready(function() {
 
     geocoder.setPosition('topright');
 
-
     //add geocoder to mymap
     geocoder.addTo(mymap);
 
     //set mapview checkbox for point map true
-    //$('input.checkview')[0].checked = true;
+    $('input.checkview')[0].checked = true;
 
     $('input[type="checkbox"]').on('change', function() {
         $('input[type="checkbox"]').not(this).prop('checked', false);
+        resetLayers();
     });
 
     toggle_tb();
 
-    generateOriginHeatmap();
-
+    //generateOriginHeatmap();
 
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
@@ -157,16 +155,20 @@ $(document).ready(function() {
             sel_args.dir = '';
         }
 
-
-        rebuild(sel_args);
         buildOdPoints(sel_args);
-        console.log(originList);
-
-        /*if ($('input.checkview')[1].checked) {
+        //console.log(originList);
+        //console.log(destinationList);
+        if ($('input.checkview')[0].checked) {
+            rebuild(sel_args);
+        } else if ($('input.checkview')[1].checked) {
             resetLayers();
             //add originHeatMap to mymap
             addOriginHeatMap(originList);
-        }*/
+            console.log("origin heatmap added!");
+        } else {
+            addDestHeatMap(destinationList);
+            console.log("destination heatmap added!");
+        }
 
 
         routeLayer.clearLayers();
@@ -353,6 +355,7 @@ function addOriginHeatMap(originList) {
 
     console.log("L.heatLayer: ", L.heatLayer);
     console.log(originHeat);
+    console.log(originHeat.type);
     originHeatGroup.addLayer(originHeat);
     //add origin points heatmap to mymap
     originHeatGroup.addTo(mymap);
@@ -670,14 +673,5 @@ function getBaseColor(rte) {
         loctype = 'Medical appointment' ? '#E7EC89' :
         loctype = 'Other' ? '#71716D' :
                    '#80ff00';
-}
-
-function style(feature) {
-    return {
-                    fillColor: getTypeColor(feature["o_type"]),
-                    weight: 1,
-                    opacity: 0.0,
-                    fillOpacity: 0.4
-
-    }
 }*/
+
