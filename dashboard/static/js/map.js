@@ -162,6 +162,7 @@ $(document).ready(function() {
             rebuild(sel_args);
         } else if ($('input.checkview')[1].checked) {
             resetLayers();
+            removeLayers(mymap);
             //add originHeatMap to mymap
             addOriginHeatMap(originList);
             console.log("origin heatmap added!");
@@ -337,6 +338,19 @@ $(document).ready(function() {
     });
 
     console.log(dir_lookup);
+
+//remove layers
+function removeLayers(map) { 
+    map.eachLayer(function(layer) {
+        if (layer instanceof L.TileLayer == false) {
+            map.removeLayer(layer);
+            console.log("removed layer!");
+            console.log(layer);
+            console.log(layer instanceof L.TileLayer);
+        }
+        
+    })
+} 
 
 //clear all layers
 function resetLayers() {
