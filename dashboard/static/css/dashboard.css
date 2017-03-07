@@ -105,6 +105,7 @@ body {
 
 #control-section {
     min-height: 210px;
+    margin-left: 20px;
     height: 100%;
     float: left;
 }
@@ -131,14 +132,13 @@ table {
 }
 
 #map-intro {
-    margin-left: 20px;
     width: 40%;
     float: left;
 }
 
 #map-view {
-    width: 50%;
-    margin-top: 40px;
+    width: 49%;
+    margin-top: 10px;
     margin-left: 10px;
     float: right;
 }
