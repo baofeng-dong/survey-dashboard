@@ -62,6 +62,7 @@
                 opacity: 0.9,
                 weight:5
     }
+    var originHeatLayerID = 23;
 
 //initialize map 
 $(document).ready(function() {
@@ -105,6 +106,9 @@ $(document).ready(function() {
 
     //set mapview checkbox for point map true
     $('input.checkview')[0].checked = true;
+    //set mapview checkboxes for heatmap false
+    $('input.checkview')[1].checked = false;
+    $('input.checkview')[2].checked = false;
 
     $('input[type="checkbox"]').on('change', function() {
         $('input[type="checkbox"]').not(this).prop('checked', false);
@@ -161,8 +165,11 @@ $(document).ready(function() {
         if ($('input.checkview')[0].checked) {
             rebuild(sel_args);
         } else if ($('input.checkview')[1].checked) {
-            resetLayers();
+            //resetLayers();
             removeLayers(mymap);
+            mymap.removeLayer(originHeatLayerID);
+            console.log(originHeatLayerID);
+            console.log("heatlayer removed!");
             //add originHeatMap to mymap
             addOriginHeatMap(originList);
             console.log("origin heatmap added!");
@@ -172,9 +179,10 @@ $(document).ready(function() {
         }
 
 
-        routeLayer.clearLayers();
+        //routeLayer.clearLayers();
         if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
+            console.log("route geojson added!");
         }
 
     });
@@ -202,7 +210,7 @@ $(document).ready(function() {
 
         rebuild(sel_args);
 
-        routeLayer.clearLayers();
+        //routeLayer.clearLayers();
         addRouteJson(sel_line,sel_dir);
     });
 
@@ -346,6 +354,7 @@ function removeLayers(map) {
             map.removeLayer(layer);
             console.log("removed layer!");
             console.log(layer);
+            console.log(layer._leaflet_id);
             console.log(layer instanceof L.TileLayer);
         }
         
@@ -370,9 +379,12 @@ function addOriginHeatMap(originList) {
     console.log("L.heatLayer: ", L.heatLayer);
     console.log(originHeat);
     console.log(originHeat.type);
-    originHeatGroup.addLayer(originHeat);
+    //originHeatGroup.addLayer(originHeat);
     //add origin points heatmap to mymap
-    originHeatGroup.addTo(mymap);
+    originHeat.addTo(mymap);
+    console.log(originHeat._leaflet_id);
+    originHeatLayerID = originHeat._leaflet_id;
+    return originHeatLayerID
 }
 
 //add destination points heatmap to mymap
@@ -390,7 +402,7 @@ function addDestHeatMap(destinationList) {
 
 // add route GeoJson to map based on sel_line and sel_dir
 function addRouteJson(sel_line, sel_dir) {
-
+    routeLayer.clearLayers();
     console.log(sel_line);
     console.log(sel_dir);
 
