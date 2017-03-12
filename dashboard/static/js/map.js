@@ -1,6 +1,7 @@
 
     var sel_line = '';
     var sel_dir = '';
+//dictionary for storing query params and values
     var sel_args = {
         rte : "",
         dir : "",
@@ -62,7 +63,8 @@
                 opacity: 0.9,
                 weight:5
     }
-    var originHeatLayerID = 23;
+    //assign a default value of 0000 to origin heatlayer _leaflet_id
+    var originHeatLayerID = 0000;
 
 //initialize map 
 $(document).ready(function() {
@@ -143,9 +145,9 @@ $(document).ready(function() {
             //update direction dropdown with correct names
             var dir = dir_lookup[sel_line];
             console.log(this.text);
-            console.log(dir_lookup);
+            //console.log(dir_lookup);
             $("#outbound_link").text(dir[0].dir_desc).attr("dir", dir[0].dir).show();
-            console.log(dir);
+            //console.log(dir);
             $("#inbound_link").text(dir[1].dir_desc).attr("dir", dir[1].dir).show();
             $(".direction_cls").show();
         }
@@ -158,15 +160,17 @@ $(document).ready(function() {
             sel_args.rte = '';
             sel_args.dir = '';
         }
-
+        //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
-        //console.log(originList);
-        //console.log(destinationList);
+
+        //if point map selected
         if ($('input.checkview')[0].checked) {
             rebuild(sel_args);
+        //if origin heatmap checkbox is selected
         } else if ($('input.checkview')[1].checked) {
             //resetLayers();
             removeLayers(mymap);
+            //remove previous origin heatlayer based on _leaflet_id
             mymap.removeLayer(originHeatLayerID);
             console.log(originHeatLayerID);
             console.log("heatlayer removed!");
@@ -381,6 +385,8 @@ function addOriginHeatMap(originList) {
     console.log(originHeat.type);
     //originHeatGroup.addLayer(originHeat);
     //add origin points heatmap to mymap
+    originHeat.redraw();
+    console.log("redraw heatmap!");
     originHeat.addTo(mymap);
     console.log(originHeat._leaflet_id);
     originHeatLayerID = originHeat._leaflet_id;
@@ -492,7 +498,11 @@ function rebuild(args) {
 
 //to build the origin and destination points arrays
 function buildOdPoints(args) {
-
+    //clear the origin and destination points arrays
+    originList.length = 0;
+    console.log("origin list array cleared!");
+    destinationList.length = 0;
+    console.log("destinationList cleared!");
     odPairLayerGroup.clearLayers();
     console.log(args);
 
@@ -515,7 +525,8 @@ function buildOdPoints(args) {
             destinationList.push([d_lat, d_lng]);
 
         });
-
+        console.log(originList.length);
+        console.log(destinationList.length);
         return destinationList, originList;
 
     });
