@@ -63,8 +63,6 @@
                 opacity: 0.9,
                 weight:5
     }
-    //assign a default value of 0000 to origin heatlayer _leaflet_id
-    var originHeatLayerID = 0000;
 
 //initialize map 
 $(document).ready(function() {
@@ -112,18 +110,49 @@ $(document).ready(function() {
     $('input.checkview')[1].checked = false;
     $('input.checkview')[2].checked = false;
 
-    $('input[type="checkbox"]').on('change', function() {
+    /*$('input[type="checkbox"]').on('change', function() {
         $('input[type="checkbox"]').not(this).prop('checked', false);
         resetLayers();
-    });
+        removeLayers(mymap);
+    });*/
+
+    $("input[type='checkbox']").change(
+        function() {
+            $('input[type="checkbox"]').not(this).prop('checked', false);
+            if ($('input.checkview')[0].checked) {
+                //clear layers
+                resetLayers();
+                removeLayers(mymap);
+                rebuild(sel_args);
+            } else if ($('input.checkview')[1].checked) {
+                buildOdPoints(sel_args);
+                resetLayers();
+                removeLayers(mymap);
+                //add originHeatMap to mymap
+                addOriginHeatMap(originList);
+                console.log("origin heatmap added!");
+                if (sel_line && sel_dir !== null) {
+                    addRouteJson(sel_line,0);
+                    console.log("route geojson added!");
+                }
+            } else {
+                buildOdPoints(sel_args);
+                resetLayers();
+                removeLayers(mymap);
+                //add destination heatmap to mymap
+                addDestHeatMap(destinationList);
+                console.log("dest heatmpa added!");
+                if (sel_line && sel_dir !== null) {
+                    addRouteJson(sel_line,0);
+                    console.log("route geojson added!");
+                }
+            }
+        });
 
     toggle_tb();
 
-    //generateOriginHeatmap();
-
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
-
 
     $('#filter_line a').on('click', function() {
         sel_line = $(this).attr('rte');
@@ -162,26 +191,8 @@ $(document).ready(function() {
         }
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
-
-        //if point map selected
-        if ($('input.checkview')[0].checked) {
-            rebuild(sel_args);
-        //if origin heatmap checkbox is selected
-        } else if ($('input.checkview')[1].checked) {
-            //resetLayers();
-            removeLayers(mymap);
-            //remove previous origin heatlayer based on _leaflet_id
-            mymap.removeLayer(originHeatLayerID);
-            console.log(originHeatLayerID);
-            console.log("heatlayer removed!");
-            //add originHeatMap to mymap
-            addOriginHeatMap(originList);
-            console.log("origin heatmap added!");
-        } else {
-            addDestHeatMap(destinationList);
-            console.log("destination heatmap added!");
-        }
-
+        //add maps based on which mapbox is checked
+        addMapview();
 
         //routeLayer.clearLayers();
         if (sel_line && sel_dir !== null) {
@@ -208,11 +219,10 @@ $(document).ready(function() {
         resetLayers();
         console.log(sel_args);
 
-        if (sel_args.rte && sel_args.dir) {
-            rebuildPath(sel_args);
-        }
-
-        rebuild(sel_args);
+        //build origin/destination points arrays based on selected params
+        buildOdPoints(sel_args);
+        //add map based on which mapview box is checked
+        addMapview();
 
         //routeLayer.clearLayers();
         addRouteJson(sel_line,sel_dir);
@@ -231,7 +241,6 @@ $(document).ready(function() {
             odPairLayerGroup.clearLayers();
             rebuildPath(sel_args);
         }
-        
 
     });
 
@@ -248,7 +257,6 @@ $(document).ready(function() {
             odPairLayerGroup.clearLayers();
             rebuildPath(sel_args);
         }
-        
 
     });
 
@@ -265,7 +273,6 @@ $(document).ready(function() {
             odPairLayerGroup.clearLayers();
             rebuildPath(sel_args);
         }
-
 
     });
 
@@ -288,7 +295,6 @@ $(document).ready(function() {
             rebuildPath(sel_args);
         }
 
-
     });
 
     $('#filter_travel a').on('click', function() {
@@ -309,7 +315,6 @@ $(document).ready(function() {
             odPairLayerGroup.clearLayers();
             rebuildPath(sel_args);
         }
-
 
     });
 
@@ -332,10 +337,9 @@ $(document).ready(function() {
             rebuildPath(sel_args);
         }
 
-
     });
 
-})
+});
 
 
     //set when a route, direction or user is selected from dropdowns
@@ -350,6 +354,30 @@ $(document).ready(function() {
     });
 
     console.log(dir_lookup);
+
+//add different maps based on the map view box selected
+function addMapview () {
+        //if point map selected
+        if ($('input.checkview')[0].checked) {
+            rebuild(sel_args);
+            if (sel_args.rte && sel_args.dir) {
+                rebuildPath(sel_args);
+            }
+        //if origin heatmap checkbox is selected
+        } else if ($('input.checkview')[1].checked) {
+            //clear layers
+            removeLayers(mymap);
+            //add originHeatMap to mymap
+            addOriginHeatMap(originList);
+            console.log("origin heatmap added!");
+        } else {
+            //clear layers
+            removeLayers(mymap);
+            //add dest heatmap
+            addDestHeatMap(destinationList);
+            console.log("destination heatmap added!");
+        }
+}
 
 //remove layers
 function removeLayers(map) { 
@@ -388,9 +416,6 @@ function addOriginHeatMap(originList) {
     originHeat.redraw();
     console.log("redraw heatmap!");
     originHeat.addTo(mymap);
-    console.log(originHeat._leaflet_id);
-    originHeatLayerID = originHeat._leaflet_id;
-    return originHeatLayerID
 }
 
 //add destination points heatmap to mymap
@@ -438,8 +463,7 @@ function addRouteJson(sel_line, sel_dir) {
     })
 
 }
-
-
+//function to send query to map/_query to args and build the points map
 function rebuild(args) {
     //clear previous orig and dest markers
     //origMarkersLayer.clearLayers();
@@ -698,17 +722,4 @@ function getBaseColor(rte) {
            rte == 290 ? '#D15F27' :
                         '#1c4ca5' ;
 }
-
-/*function getTypeColor(loctype) {
- return loctype = 'Home' ? '#CE71EC' :
-        loctype = 'Work' ? '#EE843A' :
-        loctype = 'School' ? '#6EEE3F' :
-        loctype = 'Recreation' ? '#45C9F3' :
-        loctype = 'Shopping' ? '#F345D6' :
-        loctype = 'Personal business' ? '#7ECFEE' :
-        loctype = 'Visit family or friends' ? '#7E8AEE' :
-        loctype = 'Medical appointment' ? '#E7EC89' :
-        loctype = 'Other' ? '#71716D' :
-                   '#80ff00';
-}*/
 
