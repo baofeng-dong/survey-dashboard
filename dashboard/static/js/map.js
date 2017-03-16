@@ -110,12 +110,6 @@ $(document).ready(function() {
     $('input.checkview')[1].checked = false;
     $('input.checkview')[2].checked = false;
 
-    /*$('input[type="checkbox"]').on('change', function() {
-        $('input[type="checkbox"]').not(this).prop('checked', false);
-        resetLayers();
-        removeLayers(mymap);
-    });*/
-
     $("input[type='checkbox']").change(
         function() {
             $('input[type="checkbox"]').not(this).prop('checked', false);
@@ -235,12 +229,7 @@ $(document).ready(function() {
         sel_args.day = sel_day;
 
         $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        /*rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }*/
+
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
         //add maps based on which mapbox is checked
@@ -255,12 +244,7 @@ $(document).ready(function() {
         sel_args.orig = sel_orig;
 
         $("#origin_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        /*rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }*/
+
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
         //add maps based on which mapbox is checked
@@ -275,12 +259,7 @@ $(document).ready(function() {
         sel_args.dest = sel_dest;
 
         $("#dest_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        /*rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }*/
+
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
         //add maps based on which mapbox is checked
@@ -340,12 +319,7 @@ $(document).ready(function() {
         }
 
         $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        /*rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }*/
+
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
         //add maps based on which mapbox is checked
@@ -736,4 +710,3 @@ function getBaseColor(rte) {
            rte == 290 ? '#D15F27' :
                         '#1c4ca5' ;
 }
-
