@@ -300,12 +300,7 @@ $(document).ready(function() {
         }
 
         $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        /*rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }*/
+
         //build origin/destination points arrays based on selected params
         buildOdPoints(sel_args);
         //add maps based on which mapbox is checked
@@ -325,12 +320,11 @@ $(document).ready(function() {
         }
 
         $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
-        
-        rebuild(sel_args);
-        if (sel_args.rte && sel_args.dir) {
-            odPairLayerGroup.clearLayers();
-            rebuildPath(sel_args);
-        }
+
+        //build origin/destination points arrays based on selected params
+        buildOdPoints(sel_args);
+        //add maps based on which mapbox is checked
+        addMapview();
 
     });
 
@@ -347,11 +341,15 @@ $(document).ready(function() {
 
         $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
         
-        rebuild(sel_args);
+        /*rebuild(sel_args);
         if (sel_args.rte && sel_args.dir) {
             odPairLayerGroup.clearLayers();
             rebuildPath(sel_args);
-        }
+        }*/
+        //build origin/destination points arrays based on selected params
+        buildOdPoints(sel_args);
+        //add maps based on which mapbox is checked
+        addMapview();
 
     });
 
