@@ -251,7 +251,7 @@ $(document).ready(function() {
         //add maps based on which mapbox is checked
         setTimeout(function() {
             addMapview();
-        }, 1000);
+        }, 1200);
     });
 
     $('#filter_origin a').on('click', function() {
