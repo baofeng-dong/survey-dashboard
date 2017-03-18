@@ -272,7 +272,7 @@ $(document).ready(function() {
         setTimeout(function() {
             //add maps based on which mapbox is checked
             addMapview();
-        },1000);
+        },1200);
     });
 
     $('#filter_dest a').on('click', function() {
@@ -315,7 +315,7 @@ $(document).ready(function() {
         setTimeout(function() {
             //add maps based on which mapbox is checked
             addMapview();
-        },1000);
+        },1500);
     });
 
     $('#filter_travel a').on('click', function() {
@@ -337,7 +337,7 @@ $(document).ready(function() {
         setTimeout(function() {
             //add maps based on which mapbox is checked
             addMapview();
-        },1000);
+        },1200);
     });
 
     $('#filter_satisfaction a').on('click', function() {
@@ -359,7 +359,7 @@ $(document).ready(function() {
         setTimeout(function() {
             //add maps based on which mapbox is checked
             addMapview();
-        },1000);
+        },1200);
     });
 
 });
