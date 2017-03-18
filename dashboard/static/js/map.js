@@ -207,7 +207,7 @@ $(document).ready(function() {
                 addRouteJson(sel_line,0);
                 console.log("route geojson added!");
             }
-        },900);
+        },1200);
 
     });
 
@@ -235,7 +235,7 @@ $(document).ready(function() {
             addMapview();
             //add route geojson based on rte and dir
             addRouteJson(sel_line,sel_dir);
-        }, 900);
+        }, 1200);
     });
 
     $('#filter_day a').on('click', function() {
