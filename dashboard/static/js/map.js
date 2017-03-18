@@ -137,7 +137,7 @@ $(document).ready(function() {
                         addRouteJson(sel_line,0);
                         console.log("route geojson added!");
                     }
-                }, 1000);
+                }, 1800);
                 
             } else {
                 buildOdPoints(sel_args);
@@ -153,7 +153,7 @@ $(document).ready(function() {
                         addRouteJson(sel_line,0);
                         console.log("route geojson added!");
                     }
-                }, 1000);
+                }, 1800);
             }
         });
 
