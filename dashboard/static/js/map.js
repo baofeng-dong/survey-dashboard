@@ -17,6 +17,8 @@
     var originList = [];
     var destinationList = [];
 
+    var mapData = [];
+
     var dir_lookup = {};
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
@@ -123,37 +125,27 @@ $(document).ready(function() {
                 resetLayers();
                 removeLayers(mymap);
                 rebuild(sel_args);
+                if (sel_args.rte && sel_args.dir) {
+                    rebuildPath(sel_args);
+                }
             } else if ($('input.checkview')[1].checked) {
-                buildOdPoints(sel_args);
-                //execute clear layers and add heatmap code after origin array is returned
-                setTimeout(function() {
-                    //clear and reset layers
-                    resetLayers();
-                    removeLayers(mymap);
-                    //add originHeatMap to mymap
-                    addOriginHeatMap(originList);
-                    console.log("origin heatmap added!");
-                    if (sel_line && sel_dir !== null) {
-                        addRouteJson(sel_line,0);
-                        console.log("route geojson added!");
-                    }
-                }, 1800);
-                
+                resetLayers();
+                removeLayers(mymap);
+                buildHeatmap(sel_args, addOriginHeatMap, function(){});
+                if (sel_line && sel_dir !== null) {
+                    addRouteJson(sel_line,0);
+                    console.log("route geojson added!");
+                }
             } else {
-                buildOdPoints(sel_args);
-                //execute clear layers and add heatmap code after dest array is returned
-                setTimeout(function() {
-                    //clear and reset layers
-                    resetLayers();
-                    removeLayers(mymap);
-                    //add destination heatmap to mymap
-                    addDestHeatMap(destinationList);
-                    console.log("dest heatmpa added!");
-                    if (sel_line && sel_dir !== null) {
-                        addRouteJson(sel_line,0);
-                        console.log("route geojson added!");
-                    }
-                }, 1800);
+                //clear and reset layers
+                resetLayers();
+                removeLayers(mymap);
+                buildHeatmap(sel_args, function(){}, addDestHeatMap);
+                console.log("dest heatmap added!");
+                if (sel_line && sel_dir !== null) {
+                    addRouteJson(sel_line,0);
+                    console.log("route geojson added!");
+                }
             }
         });
 
@@ -161,7 +153,7 @@ $(document).ready(function() {
 
     //load map with markers on initial page load with no filter params
     rebuild(sel_args);
-
+    //function for when a bus/MAX/WES route is selected
     $('#filter_line a').on('click', function() {
         sel_line = $(this).attr('rte');
         console.log(sel_line);
@@ -198,21 +190,15 @@ $(document).ready(function() {
             sel_args.dir = '';
         }
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        //add maps based on which mapbox is checked
-        setTimeout(function () {
-            addMapview();
-            if (sel_line && sel_dir !== null) {
-                addRouteJson(sel_line,0);
-                console.log("route geojson added!");
-            }
-        },1200);
-
+        //add mapview based on which checkbox is selected
+        addMapview();
+        if (sel_line && sel_dir !== null) {
+            addRouteJson(sel_line,0);
+            console.log("route geojson added!");
+        }
     });
-
+    //function for when direction for a route is selected
     $('#filter_dir a').on('click', function() {
-
         sel_dir = $(this).attr("dir");
         console.log("sel_dir: " + sel_dir);
         sel_args.dir = sel_dir;
@@ -224,38 +210,26 @@ $(document).ready(function() {
             sel_args.dir = '';
         } 
         console.log(sel_dir);
-
-        resetLayers();
         console.log(sel_args);
-
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
+        resetLayers();
         //add map based on which mapview box is checked
-        setTimeout(function() {
-            addMapview();
-            //add route geojson based on rte and dir
-            addRouteJson(sel_line,sel_dir);
-        }, 1200);
+        addMapview();
+        //add route geojson based on rte and dir
+        addRouteJson(sel_line,sel_dir);
     });
-
+    //function for when day of week is selected
     $('#filter_day a').on('click', function() {
-
         var sel_day = this.text
         console.log("day selected: " + sel_day)
         sel_args.day = sel_day;
 
         $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        //add maps based on which mapbox is checked
-        setTimeout(function() {
-            addMapview();
-        }, 1200);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
     });
-
+    //function for when origin type is selected
     $('#filter_origin a').on('click', function() {
-
         var sel_orig = this.text
         console.log("origin selected: " + sel_orig)
         if (sel_orig == 'All') {
@@ -263,20 +237,18 @@ $(document).ready(function() {
         } else {
             sel_args.orig = sel_orig;
         }
-
         $("#origin_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        setTimeout(function() {
-            //add maps based on which mapbox is checked
-            addMapview();
-        },1200);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
+        if (sel_line && sel_dir !== null) {
+            addRouteJson(sel_line,0);
+            console.log("route geojson added!");
+        }
     });
-
+    //function for when destination type is selected
     $('#filter_dest a').on('click', function() {
-
         var sel_dest = this.text
         console.log("destination selected: " + sel_dest);
         if (sel_dest == 'All') {
@@ -288,16 +260,15 @@ $(document).ready(function() {
         $("#dest_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        setTimeout(function() {
-            //add maps based on which mapbox is checked
-            addMapview();
-        },1200);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
+        if (sel_line && sel_dir !== null) {
+            addRouteJson(sel_line,0);
+            console.log("route geojson added!");
+        }
     });
-
+    //function for when time of day is selected
     $('#filter_tod a').on('click', function() {
-
         var sel_tod = this.text
         console.log("time of day selected: " + sel_tod);
         if (sel_tod == 'All') {
@@ -310,16 +281,11 @@ $(document).ready(function() {
         $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        setTimeout(function() {
-            //add maps based on which mapbox is checked
-            addMapview();
-        },1500);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
     });
-
+    //function for when travel more/same/less is selected
     $('#filter_travel a').on('click', function() {
-
         var sel_travel = this.text
         console.log("travel change selected: " + sel_travel);
         if (sel_travel == 'All') {
@@ -332,16 +298,11 @@ $(document).ready(function() {
         $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        setTimeout(function() {
-            //add maps based on which mapbox is checked
-            addMapview();
-        },1200);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
     });
-
+    //function for when satisfaction level is selected
     $('#filter_satisfaction a').on('click', function() {
-
         var sel_satisfaction = this.text
         console.log("satisfaction selected: " + sel_satisfaction);
         if (sel_satisfaction == 'All') {
@@ -354,14 +315,9 @@ $(document).ready(function() {
         $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
-        //build origin/destination points arrays based on selected params
-        buildOdPoints(sel_args);
-        setTimeout(function() {
-            //add maps based on which mapbox is checked
-            addMapview();
-        },1200);
+        //add maps based on which mapview checkbox is checked
+        addMapview();
     });
-
 });
 
 
@@ -372,7 +328,6 @@ $(document).ready(function() {
             dir_lookup[item.rte] = [null, null];
         }
         dir_lookup[item.rte][item.dir] = item;
-
 
     });
 
@@ -386,19 +341,10 @@ function addMapview () {
             if (sel_args.rte && sel_args.dir) {
                 rebuildPath(sel_args);
             }
-        //if origin heatmap checkbox is selected
-        } else if ($('input.checkview')[1].checked) {
-            //clear layers
-            removeLayers(mymap);
-            //add originHeatMap to mymap
-            addOriginHeatMap(originList);
-            console.log("origin heatmap added!");
         } else {
             //clear layers
             removeLayers(mymap);
-            //add dest heatmap
-            addDestHeatMap(destinationList);
-            console.log("destination heatmap added!");
+            buildHeatmap(sel_args, addOriginHeatMap, addDestHeatMap);
         }
 }
 
@@ -428,6 +374,7 @@ function addOriginHeatMap(originList) {
     originHeat.redraw();
     console.log("redraw heatmap!");
     originHeat.addTo(mymap);
+    console.log("add origin heatmap executed!");
 }
 
 //add destination points heatmap to mymap
@@ -435,7 +382,9 @@ function addDestHeatMap(destinationList) {
     var destHeat = L.heatLayer(destinationList, heatmapOptions);
     //add origin points heatmap to mymap
     destHeat.redraw();
+    console.log("redraw dest heatmap!");
     destHeat.addTo(mymap);
+    console.log("add dest heatmap executed!");
 }
 
 // add route GeoJson to map based on sel_line and sel_dir
@@ -524,19 +473,30 @@ function rebuild(args) {
     addLabel();
 }
 
+function queryData(args) {
+    console.log(args);
+    var promise = $.getJSON('map/_query', args);
+    promise.done(function(data){
+        console.log(data);
+        mapData = data.data;
+        console.log(mapData);
+        console.log("data returned!");
+        return mapData;
+    });
+}
+
 //to build the origin and destination points arrays
-function buildOdPoints(args) {
-    //clear the origin and destination points arrays
-    originList.length = 0;
-    console.log("origin list array cleared!");
-    destinationList.length = 0;
-    console.log("destinationList cleared!");
+function buildHeatmap(args, callback1, callback2) {
+    
     odPairLayerGroup.clearLayers();
     console.log(args);
 
     $.getJSON('map/_query', args, function(data) {
-
-        //retrive origin and destination lat and lng
+        //clear the origin and destination points arrays
+        originList.length = 0;
+        console.log("origin list array cleared!");
+        destinationList.length = 0;
+        console.log("destinationList cleared!");
 
         console.log(data);
 
@@ -555,8 +515,12 @@ function buildOdPoints(args) {
         });
         console.log(originList.length);
         console.log(destinationList.length);
-        return destinationList, originList;
-
+        if($('input.checkview')[1].checked && callback1) {
+            callback1(originList);
+        }
+        if ($('input.checkview')[2].checked && callback2) {
+            callback2(destinationList);
+        }
     });
 }
 
