@@ -128,6 +128,10 @@ $(document).ready(function() {
                 if (sel_args.rte && sel_args.dir) {
                     rebuildPath(sel_args);
                 }
+                if (sel_line && sel_dir !== null) {
+                    addRouteJson(sel_line,0);
+                    console.log("route geojson added!");
+                }
             } else if ($('input.checkview')[1].checked) {
                 resetLayers();
                 removeLayers(mymap);
