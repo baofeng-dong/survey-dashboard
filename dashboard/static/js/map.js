@@ -29,6 +29,8 @@
     var odPairLayerGroup = new L.FeatureGroup();
     //create layer of transit routes layer
     var routeLayer = new L.FeatureGroup();
+    //create boundary geojson layergroup
+    var boundaryLayer = new L.FeatureGroup();
     //create origin and destination points heat layergroups
     var originHeatGroup = new L.FeatureGroup();
     var destHeatGroup = new L.FeatureGroup();
@@ -73,12 +75,12 @@
 
 //initialize map 
 $(document).ready(function() {
-    mymap = L.map('mapid', {scrollWheelZoom:true}).setView([45.48661, -122.65343], 11);
+    mymap = L.map('mapid', {scrollWheelZoom:true}).setView([45.48661, -122.65343], 10);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidG11c2VyMTk3IiwiYSI6ImNpc254cHk1YTA1dngydm14bjkyamQ1NmsifQ.8ya7T1hHXtVmYOwMrVIuFw', {
     attribution: '<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox &copy; OpenStreetMap</a>',
     id: 'mapbox.light',
     maxZoom: 18,
-    minZoom: 11
+    minZoom: 10
     }).addTo(mymap);
     console.log(mymap);
 
@@ -111,6 +113,9 @@ $(document).ready(function() {
     //add geocoder to mymap
     geocoder.addTo(mymap);
 
+    //add TriMet service district boundary to map on load
+    addLayer("tm_fill.geojson");
+
     //set mapview checkbox for point map true
     $('input.checkview')[0].checked = true;
     //set mapview checkboxes for heatmap false
@@ -124,6 +129,7 @@ $(document).ready(function() {
                 //clear layers
                 resetLayers();
                 removeLayers(mymap);
+                addLayer("tm_fill.geojson");
                 rebuild(sel_args);
                 if (sel_args.rte && sel_args.dir) {
                     rebuildPath(sel_args);
@@ -135,21 +141,41 @@ $(document).ready(function() {
             } else if ($('input.checkview')[1].checked) {
                 resetLayers();
                 removeLayers(mymap);
+                addLayer("tm_fill.geojson");
                 buildHeatmap(sel_args, addOriginHeatMap, function(){});
                 if (sel_line && sel_dir !== null) {
                     addRouteJson(sel_line,0);
                     console.log("route geojson added!");
                 }
-            } else {
+            } else if ($('input.checkview')[2].checked) {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
+                addLayer("tm_fill.geojson");
                 buildHeatmap(sel_args, function(){}, addDestHeatMap);
                 console.log("dest heatmap added!");
                 if (sel_line && sel_dir !== null) {
                     addRouteJson(sel_line,0);
                     console.log("route geojson added!");
                 }
+            } else if ($('input.checkview')[3].checked) {
+                //clear and reset layers
+                resetLayers();
+                removeLayers(mymap);
+                addLayer("tm_fill.geojson");
+                console.log("zipcode checkbox checked!");
+            } else if ($('input.checkview')[4].checked) {
+                //clear and reset layers
+                resetLayers();
+                removeLayers(mymap);
+                addLayer("tm_fill.geojson");
+                console.log("sep checkbox checked!");
+            } else {
+                //clear and reset layers
+                resetLayers();
+                removeLayers(mymap);
+                addLayer("tm_fill.geojson");
+                console.log("taz checkbox checked!");
             }
         });
 
@@ -423,6 +449,32 @@ function addRouteJson(sel_line, sel_dir) {
     })
 
 }
+
+//function to add geojson layer to map
+function addLayer(geojson) {
+    console.log(geojson);
+    var path = base + 'static/geojson/';
+
+    $.getJSON(path + geojson, function(data) {
+        var boundary = L.geoJson(data, {
+            style: function (feature) {
+                return {
+                        color: "#7b7b84",
+                        weight: 2.5,
+                        opacity: 0.4,
+                        fillOpacity: 0.0
+                };
+            }
+        }).addTo(boundaryLayer);
+        console.log(boundary);
+        console.log(boundary._leaflet_id);
+
+        boundaryLayer.addTo(mymap);
+        boundaryLayer.bringToBack();
+        console.log(geojson + " added to mymap!");
+    })
+}
+
 //function to send query to map/_query to args and build the points map
 function rebuild(args) {
     //clear previous orig and dest markers
