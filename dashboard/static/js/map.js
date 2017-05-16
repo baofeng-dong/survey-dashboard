@@ -163,12 +163,14 @@ $(document).ready(function() {
                 resetLayers();
                 removeLayers(mymap);
                 addLayer("tm_fill.geojson");
+                addLayer("zipcode_tm.geojson");
                 console.log("zipcode checkbox checked!");
             } else if ($('input.checkview')[4].checked) {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
                 addLayer("tm_fill.geojson");
+                addLayer("sep_bounds.geojson");
                 console.log("sep checkbox checked!");
             } else {
                 //clear and reset layers
@@ -394,6 +396,7 @@ function resetLayers() {
     origMarkersLayer.clearLayers();
     destMarkersLayer.clearLayers();
     odPairLayerGroup.clearLayers();
+    boundaryLayer.clearLayers();
 }
 
 //add origin points heatmap to mymap
@@ -459,9 +462,9 @@ function addLayer(geojson) {
         var boundary = L.geoJson(data, {
             style: function (feature) {
                 return {
-                        color: "#7b7b84",
-                        weight: 2.5,
-                        opacity: 0.4,
+                        color: "#909090",
+                        weight: 2.0,
+                        opacity: 0.8,
                         fillOpacity: 0.0
                 };
             }
