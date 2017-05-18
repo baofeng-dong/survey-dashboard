@@ -59,6 +59,63 @@ class Helper(object):
 
 
     @staticmethod
+    def query_sep_data(where):
+        ret_val = []
+        query_args = {}
+        where = where
+
+        region = " AND f.q5_orig_region='2' and f.q6_dest_region='2' "
+        validate = " AND f.loc_validated='1' "
+        not_null = " AND f.q3_orig_type is not null AND f.q4_dest_type is not null;"
+
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data 
+                        where
+                            willing = '1' and
+                            origin_sep is not null {0}),
+                sepcount as (
+                        select origin_sep,
+                        count(*) as sep_count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by origin_sep
+                        order by origin_sep)
+
+                select * from sepcount;""".format(where)
+        #query_string += where
+        #query_string += ;
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        SEP = 0
+        COUNT = 1
+        PER = 2
+
+
+        # each record will be converted as json
+        # and sent back to page
+        for record in query:
+            data = {}
+            data['sep'] = record[SEP]
+            data['count'] = record[COUNT]
+            data['percentage'] = float(record[PER])
+
+            ret_val.append(data)
+        web_session.close()
+        return ret_val
+
+
+    @staticmethod
+    def query_zipcode_data(where):
+        pass
+
+
+    @staticmethod
     def query_map_data(where):
         ret_val = []
         query_args = {}
@@ -267,6 +324,8 @@ class Helper(object):
             ret_val.append(data)
         web_session.close()
         return ret_val
+
+
     @staticmethod
     def buildconditions(args):
         where = ""
@@ -359,6 +418,7 @@ class Helper(object):
                 where += " AND f.q1_satisfaction in {0}".format(lookupsatisfaction[value])
 
         return where
+
 
     @staticmethod
     def query_route_data(user='', rte_desc='', dir_desc='', csv=False):
