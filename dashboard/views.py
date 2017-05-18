@@ -53,10 +53,33 @@ def map_query():
 
     where = Helper.buildconditions(args)
     debug(where)
+
     response = Helper.query_map_data(where=where)
 
     return jsonify(data=response)
 
+
+@app.route('/map/_data', methods=['GET'])
+def sep_query():
+    response = []
+    where = ""
+    args = request.args
+
+    where = Helper.buildconditions(args)
+    debug(where)
+
+    #get the sel_boundary param from the request.args object
+    sel_boundary = args.get('boundary')
+    debug(sel_boundary)
+
+    #call functions based on sel_boundary value
+    if sel_boundary == 'sep':
+        response = Helper.query_sep_data(where=where)
+
+    if sel_boundary == 'zipcode':
+        response = Helper.query_zipcode_data(where=where)
+
+    return jsonify(data=response)
 
 @app.route('/data')
 def data():
