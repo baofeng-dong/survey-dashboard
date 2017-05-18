@@ -41,7 +41,7 @@
     <col width="100%"/>
 
     <tr>
-      <td><input class = "checkview" type="checkbox" name="summaryview" value="zipcode">Zipcode</td>
+      <td><input class = "checkview" type="checkbox" name="mapview" value="zipcode">Zipcode</td>
     </tr>
     <tr>
       <td><input class = "checkview" type="checkbox" name="mapview" value="sep">SEP</td>
@@ -270,5 +270,6 @@
 
 
 <script type="text/javascript" src="{{ url_for('index') }}static/js/map.js"></script>
+<script type="text/javascript" src="{{ url_for('index') }}static/js/map_functions.js"></script>
 
 {% endblock %}
