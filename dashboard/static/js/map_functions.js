@@ -93,14 +93,35 @@ function addLayer(geojson) {
     var path = base + 'static/geojson/';
 
     $.getJSON(path + geojson, function(data) {
+        console.log(data);
         var boundary = L.geoJson(data, {
             style: function (feature) {
-                return {
+                console.log(feature);
+                if (geojson == 'tm_fill.geojson')
+                {
+                    return {
                         color: "#909090",
                         weight: 2.0,
                         opacity: 0.8,
                         fillOpacity: 0.0
-                };
+                    } 
+                } else if (geojson == 'sep_bounds.geojson')
+                {
+                    return {
+                        color: getBdyColor(sep_dict[feature.properties.label1]),
+                        weight: 2.0,
+                        opacity: 0.8,
+                        fillOpacity: 0.6
+                    }
+                } else
+                {
+                    return {
+                        color: getBdyColor(),
+                        weight: 2.0,
+                        opacity: 0.8,
+                        fillOpacity: 0.6
+                    }
+                }
             }
         }).addTo(boundaryLayer);
         //console.log(boundary);
@@ -160,17 +181,39 @@ function rebuild(args) {
 }
 
 //function to send query to map/_data to return boundary summary data
-function requestBoundaryData(args) {
+function requestBoundaryData(args, geojson, callback) {
 
     console.log(args);
 
     $.getJSON('map/_data', args, function(data) {
 
         console.log(data);
-        //addLayer(layer);
+        data = data.data;
+        console.log(data);
+
+        buildDict(data, 'sep');
+        console.log(sep_dict);
+
+        if(callback) {
+            callback(geojson);
+        }
 
     });
     //addLabel();
+}
+
+//function to loop through an array and build a dictionary
+function buildDict(array,args) {
+    len = array.length;
+    for (var i = 0; i < len; i++) {
+        if (args == 'sep') {
+            key = array[i]["sep"];
+            value = array[i]["percentage"];
+            console.log(key, ' ', value);
+            sep_dict[key] = value;
+        }
+    }
+    return sep_dict;
 }
 
 //to build the origin and destination points arrays
@@ -377,4 +420,15 @@ function getBaseColor(rte) {
            rte == 203 ? '#c044ec' :
            rte == 290 ? '#D15F27' :
                         '#1c4ca5' ;
+}
+
+function getBdyColor(pct) {
+    return pct > 60 ? '#ff0000' :
+            pct > 50 ? '#ff4000' :
+            pct > 40 ? '#ff8000' :
+            pct > 30 ? '#ffbf00' :
+            pct > 20 ? '#ffff00' :
+            pct > 10 ? '#bfff00' :
+            pct > 5 ? '#80ff00' :
+                       '#80ff00';
 }
