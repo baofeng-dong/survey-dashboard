@@ -2,8 +2,12 @@
     var sel_line = '';
     var sel_dir = '';
     var sel_boundary = '';
-    var sep_geojson = {};
+    var sep_dict = {};
+    var zip_dict = {};
     var zipcode_geojson = {};
+    var sepLayer = "sep_bounds.geojson";
+    var tmLayer = "tm_fill.geojson";
+    var zipLayer = "zipcode_tm.geojson";
 //dictionary for storing query params and values
     var sel_args = {
         rte : "",
@@ -131,7 +135,8 @@ $(document).ready(function() {
                 //clear layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
+
+                addLayer(tmLayer);
                 rebuild(sel_args);
                 if (sel_args.rte && sel_args.dir) {
                     rebuildPath(sel_args);
@@ -143,7 +148,7 @@ $(document).ready(function() {
             } else if ($('input.checkview')[1].checked) {
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
+                addLayer(tmLayer);
                 buildHeatmap(sel_args, addOriginHeatMap, function(){});
                 if (sel_line && sel_dir !== null) {
                     addRouteJson(sel_line,0);
@@ -153,7 +158,7 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
+                addLayer(tmLayer);
                 buildHeatmap(sel_args, function(){}, addDestHeatMap);
                 console.log("dest heatmap added!");
                 if (sel_line && sel_dir !== null) {
@@ -164,8 +169,8 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
-                addLayer("zipcode_tm.geojson");
+                addLayer(tmLayer);
+                addLayer();
                 console.log("zipcode checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
@@ -177,19 +182,19 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
-                addLayer("sep_bounds.geojson");
+                addLayer(tmLayer);
+                //addLayer("sep_bounds.geojson");
                 console.log("sep checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
                 console.log("boundary selected: " + sel_boundary);
                 sel_args.boundary = sel_boundary;
-                requestBoundaryData(sel_args);
+                requestBoundaryData(sel_args, sepLayer, addLayer);
             } else {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer("tm_fill.geojson");
+                addLayer(tmLayer);
                 console.log("taz checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
