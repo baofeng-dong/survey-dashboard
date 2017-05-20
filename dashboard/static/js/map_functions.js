@@ -94,42 +94,102 @@ function addLayer(geojson) {
 
     $.getJSON(path + geojson, function(data) {
         console.log(data);
-        var boundary = L.geoJson(data, {
-            style: function (feature) {
-                console.log(feature);
-                if (geojson == 'tm_fill.geojson')
-                {
-                    return {
-                        color: "#909090",
-                        weight: 2.0,
-                        opacity: 0.8,
-                        fillOpacity: 0.0
-                    } 
-                } else if (geojson == 'sep_bounds.geojson')
-                {
-                    return {
-                        color: getBdyColor(sep_dict[feature.properties.label1]),
-                        weight: 2.0,
-                        opacity: 0.8,
-                        fillOpacity: 0.6
-                    }
-                } else
-                {
-                    return {
-                        color: getBdyColor(),
-                        weight: 2.0,
-                        opacity: 0.8,
-                        fillOpacity: 0.6
-                    }
-                }
-            }
+        boundary = L.geoJson(data, {
+            style: switchStyle(geojson),
+            onEachFeature: onEachFeature
         }).addTo(boundaryLayer);
         //console.log(boundary);
 
         boundaryLayer.addTo(mymap);
-        boundaryLayer.bringToBack();
+        boundaryLayer.bringToFront();
         console.log(geojson + " added to mymap!");
     })
+}
+
+//function to zoom to a sep area
+function zoomToFeature(e) {
+    mymap.fitBounds(e.target.getBounds());
+}
+
+//function to pick a style based on boundary layer
+function switchStyle(geojson) {
+    if (geojson == tmLayer) {
+        return style
+    } else if (geojson == sepLayer){
+        return sepStyle
+    } else {
+        return zipStyle
+    }
+}
+
+//style function
+function style(feature) {
+    console.log(feature);
+    return {
+        color: "#909090",
+        weight: 2.0,
+        opacity: 0.8,
+        fillOpacity: 0.0
+    } 
+}
+
+//style for sep
+function sepStyle(feature){
+    return {
+        fillColor: getBdyColor(sep_dict[feature.properties.label1]),
+        weight: 2.0,
+        opacity: 0.8,
+        color: 'white',
+        fillOpacity: 0.6
+    }
+}
+
+//style for zipcode
+function zipStyle(feature){
+    return {
+        color: getBdyColor(),
+        weight: 2.0,
+        opacity: 0.8,
+        fillOpacity: 0.6
+    }
+}
+
+//function to highlight layer when a mouse hovers over
+function highlightFeature(e) {
+    var layer = e.target;
+
+    layer.openPopup();
+
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+}
+
+//reset style on mouseout
+function resetHighlight(e) {
+    var layer = e.target;
+    boundary.resetStyle(layer);
+    layer.closePopup();
+
+}
+
+//use onEachFeature option to add listeners on sep layers
+function onEachFeature(feature, layer) {
+    var popupContent = "<b>SEP:</b> " + feature.properties.label1;
+    layer.bindPopup(popupContent);
+
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
 }
 
 //function to send query to map/_query to args and build the points map
