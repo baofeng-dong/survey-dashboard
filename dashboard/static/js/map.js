@@ -8,6 +8,7 @@
     var sepLayer = "sep_bounds.geojson";
     var tmLayer = "tm_fill.geojson";
     var zipLayer = "zipcode_tm.geojson";
+    var boundary;
 //dictionary for storing query params and values
     var sel_args = {
         rte : "",
