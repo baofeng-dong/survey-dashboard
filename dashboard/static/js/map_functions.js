@@ -96,7 +96,7 @@ function addLayer(geojson) {
         console.log(data);
         boundary = L.geoJson(data, {
             style: switchStyle(geojson),
-            onEachFeature: onEachFeature
+            onEachFeature: switchFeature(geojson)
         }).addTo(boundaryLayer);
         //console.log(boundary);
 
@@ -180,10 +180,31 @@ function resetHighlight(e) {
 
 }
 
+//switch on each feature based on boundary layer
+function switchFeature(geojson) {
+    if (geojson == sepLayer) {
+        return onEachFeatureSep
+    } else if (geojson == zipLayer){
+        return onEachFeatureZip
+    } else {
+        return
+    }
+}
 //use onEachFeature option to add listeners on sep layers
-function onEachFeature(feature, layer) {
+function onEachFeatureSep(feature, layer) {
     var popupContent = "<b>SEP:</b> " + feature.properties.label1;
     layer.bindPopup(popupContent);
+
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+
+function onEachFeatureZip(feature, layer) {
+    //var popupContent = "<b>SEP:</b> " + feature.properties.label1;
+    //layer.bindPopup(popupContent);
 
     layer.on({
         mouseover: highlightFeature,
