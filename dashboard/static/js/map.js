@@ -2,6 +2,7 @@
     var sel_line = '';
     var sel_dir = '';
     var sel_boundary = '';
+    var dest_sep = '';
     var sep_dict = {};
     var zip_dict = {};
     var zipcode_geojson = {};
@@ -19,7 +20,8 @@
         dest : "",
         travel: "",
         satisfaction: "",
-        boundary: ""
+        boundary: "",
+        dest_sep: ""
     }
 
     //creates a list to store origin and destination latlng objects
@@ -177,7 +179,7 @@ $(document).ready(function() {
                 sel_boundary = $(this).attr("value");
                 console.log("boundary selected: " + sel_boundary);
                 sel_args.boundary = sel_boundary;
-                requestBoundaryData(sel_args);
+                requestBoundaryData(sel_args, zipLayer, addLayer);
 
             } else if ($('input.checkview')[4].checked) {
                 //clear and reset layers
@@ -248,6 +250,7 @@ $(document).ready(function() {
         resetLayers();
         //add mapview based on which checkbox is selected
         addMapview();
+        requestBoundaryData(sel_args, sepLayer, addLayer);
         if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
             console.log("route geojson added!");
