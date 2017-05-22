@@ -140,7 +140,7 @@ function sepStyle(feature){
         weight: 2.0,
         opacity: 0.8,
         color: 'white',
-        fillOpacity: 0.6
+        fillOpacity: 0.7
     }
 }
 
@@ -157,8 +157,12 @@ function zipStyle(feature){
 //function to highlight layer when a mouse hovers over
 function highlightFeature(e) {
     var layer = e.target;
+    console.log(layer.feature.properties.label1);
+    var dest_sep = layer.feature.properties.label1;
+    sel_args.dest_sep = dest_sep;
+    requestBoundaryData(sel_args, sepLayer, addLayer);
 
-    layer.openPopup();
+    //layer.openPopup();
 
     layer.setStyle({
         weight: 5,
@@ -176,7 +180,7 @@ function highlightFeature(e) {
 function resetHighlight(e) {
     var layer = e.target;
     boundary.resetStyle(layer);
-    layer.closePopup();
+    //layer.closePopup();
 
 }
 
@@ -190,10 +194,24 @@ function switchFeature(geojson) {
         return
     }
 }
+
+//alert function
+function showAlert() {
+    alert("hello!");
+}
 //use onEachFeature option to add listeners on sep layers
 function onEachFeatureSep(feature, layer) {
     var popupContent = "<b>SEP:</b> " + feature.properties.label1;
     layer.bindPopup(popupContent);
+    console.log(feature.properties.label1);
+    var label = L.marker(layer.getBounds().getCenter(), {
+      icon: L.divIcon({
+        className: 'label',
+        html: feature.properties.label1,
+        iconSize: [100, 40],
+        color: 'black'
+      })
+    }).addTo(mymap);
 
     layer.on({
         mouseover: highlightFeature,
@@ -258,7 +276,7 @@ function rebuild(args) {
             odPairLayerGroup.addTo(mymap);
         });
     });
-    addLabel();
+    //addLabel();
 }
 
 //function to send query to map/_data to return boundary summary data
@@ -280,7 +298,7 @@ function requestBoundaryData(args, geojson, callback) {
         }
 
     });
-    //addLabel();
+    addMapLabel();
 }
 
 //function to loop through an array and build a dictionary
@@ -487,6 +505,48 @@ function addLabel() {
 
 }
 
+//add label to map
+function addMapLabel() {
+    if(hasLegend) {
+        return
+    }
+
+    var legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [0, 5, 10, 20, 30, 40, 50, 60],
+        labels = [];
+        //labels = [(title.bold()).fontsize(3)],
+        //from, to;
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    /*for (var i = 0; i < grades.length; i++) {
+        from = grades [i];
+        to = grades[i+1]-1;
+
+    labels.push(
+        '<i style="background:' + getLongColor(from + 1) + '"></i> ' +
+        from + (to ? '&ndash;' + to : '+'));
+        }
+        div.innerHTML = labels.join('<br>');
+        return div;*/
+    for (var i = 0; i < grades.length; i++) {
+    div.innerHTML +=
+        '<i style="background:' + getBdyColor(grades[i] + 1) + '"></i> ' +
+        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+
+
+        };
+
+    legend.addTo(mymap);
+    hasLegend = true;
+}
+
 function getColor(d) {
     return  d == 'ORIGIN' ? "#259CEF" :
             d == 'DESTINATION' ? "#4BF01B" :
@@ -504,12 +564,12 @@ function getBaseColor(rte) {
 }
 
 function getBdyColor(pct) {
-    return pct > 60 ? '#ff0000' :
-            pct > 50 ? '#ff4000' :
-            pct > 40 ? '#ff8000' :
-            pct > 30 ? '#ffbf00' :
-            pct > 20 ? '#ffff00' :
-            pct > 10 ? '#bfff00' :
-            pct > 5 ? '#80ff00' :
-                       '#80ff00';
+    return  pct > 60 ? '#d73027' :
+            pct > 50 ? '#f46d43' :
+            pct > 40 ? '#fdae61' :
+            pct > 30 ? '#fee08b' :
+            pct > 20 ? '#d9ef8b' :
+            pct > 10 ? '#a6d96a' :
+            pct > 5  ? '#66bd63' :
+                       '#1a9850';
 }
