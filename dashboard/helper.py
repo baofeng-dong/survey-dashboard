@@ -71,7 +71,7 @@ class Helper(object):
         query_string = """
             WITH survey as (
                 select *
-                        from odk.fall_survey_2016_data 
+                        from odk.fall_survey_2016_data f
                         where
                             willing = '1' and
                             origin_sep is not null {0}),
@@ -404,6 +404,9 @@ class Helper(object):
             if key == "tod":
                 #debug(isinstance(value, str))
                 where += " AND f.time_of_day='{0}'".format(value)
+
+            if key == "dest_sep":
+                where += " AND f.dest_sep='{0}'".format(value)
 
             if key == "orig" and value in lookupaddress:
                 where += " AND f.q3_orig_type='{0}'".format(lookupaddress[value])
