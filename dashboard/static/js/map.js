@@ -250,7 +250,7 @@ $(document).ready(function() {
         resetLayers();
         //add mapview based on which checkbox is selected
         addMapview();
-        requestBoundaryData(sel_args, sepLayer, addLayer);
+        //requestBoundaryData(sel_args, sepLayer, addLayer);
         if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
             console.log("route geojson added!");
