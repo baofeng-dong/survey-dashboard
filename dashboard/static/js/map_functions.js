@@ -7,10 +7,12 @@ function addMapview () {
             if (sel_args.rte && sel_args.dir) {
                 rebuildPath(sel_args);
             }
-        } else {
+        } else if ($('input.checkview')[1].checked || $('input.checkview')[2].checked){
             //clear layers
             removeLayers(mymap);
             buildHeatmap(sel_args, addOriginHeatMap, addDestHeatMap);
+        } else if ($('input.checkview')[4].checked) {
+            requestBoundaryData(sel_args, sepLayer, addLayer);
         }
 }
 
@@ -304,6 +306,8 @@ function requestBoundaryData(args, geojson, callback) {
 //function to loop through an array and build a dictionary
 function buildDict(array,args) {
     len = array.length;
+    //clear sep_dict
+    sep_dict = {};
     for (var i = 0; i < len; i++) {
         if (args == 'sep') {
             key = array[i]["sep"];
