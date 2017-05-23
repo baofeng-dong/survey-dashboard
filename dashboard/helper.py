@@ -254,7 +254,7 @@ class Helper(object):
                 end as income,
                 f.time_of_day,
                 to_char(f._date, 'Mon DD YYYY') as _date
-            from odk.fall_survey_2016_view f
+            from odk.fall_survey_2016_data f
                 join odk.rte_lookup r
                 on f.rte::integer = r.rte and f.dir::integer = r.dir """
 
@@ -480,7 +480,7 @@ class Helper(object):
                     WHEN q1_satisfaction = '7' THEN 'Do not know'
                 end as satisfaction,
                 coalesce(f.q2_satis_comments,'')
-            from odk.fall_survey_2016_view f
+            from odk.fall_survey_2016_data f
             join odk.rte_lookup r
             on f.rte::integer = r.rte and f.dir::integer = r.dir
             join odk.surveyors s
