@@ -12,7 +12,7 @@ function addMapview () {
             removeLayers(mymap);
             buildHeatmap(sel_args, addOriginHeatMap, addDestHeatMap);
         } else if ($('input.checkview')[4].checked) {
-            requestBoundaryData(sel_args, sepLayer, addLayer);
+            requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
         }
 }
 
@@ -90,7 +90,7 @@ function addRouteJson(sel_line, sel_dir) {
 }
 
 //function to add geojson layer to map
-function addLayer(geojson) {
+function addBoundaryLayer(geojson) {
     //console.log(geojson);
     var path = base + 'static/geojson/';
 
@@ -138,7 +138,7 @@ function style(feature) {
 //style for sep
 function sepStyle(feature){
     return {
-        fillColor: getBdyColor(sep_dict[feature.properties.label1]),
+        fillColor: getSepColor(dict[feature.properties.label1]),
         weight: 2.0,
         opacity: 0.8,
         color: 'white',
@@ -149,7 +149,7 @@ function sepStyle(feature){
 //style for zipcode
 function zipStyle(feature){
     return {
-        color: getBdyColor(),
+        color: getZipColor(dict[feature.properties.zipcode]),
         weight: 2.0,
         opacity: 0.8,
         fillOpacity: 0.6
@@ -157,15 +157,13 @@ function zipStyle(feature){
 }
 
 //function to highlight layer when a mouse hovers over
-function highlightFeature(e) {
+function highlightFeatureSep(e) {
     var layer = e.target;
     console.log(layer.feature.properties.label1);
     var dest_sep = layer.feature.properties.label1;
     sel_args.dest_sep = dest_sep;
-    requestBoundaryData(sel_args, sepLayer, addLayer);
-
-    //layer.openPopup();
-
+    requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
+    layer.openPopup();
     layer.setStyle({
         weight: 5,
         color: '#666',
@@ -178,6 +176,24 @@ function highlightFeature(e) {
     }
 }
 
+//function to highlight zip layer when mouseover
+function highlightFeatureZip(e) {
+    var layer = e.target;
+    var dest_zip = layer.feature.properties.zipcode;
+    sel_args.dest_zip = dest_zip;
+    requestBoundaryData(sel_args, zipLayer, addBoundaryLayer);
+    layer.openPopup();
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+}
 //reset style on mouseout
 function resetHighlight(e) {
     var layer = e.target;
@@ -197,13 +213,10 @@ function switchFeature(geojson) {
     }
 }
 
-//alert function
-function showAlert() {
-    alert("hello!");
-}
 //use onEachFeature option to add listeners on sep layers
 function onEachFeatureSep(feature, layer) {
-    var popupContent = "<b>SEP:</b> " + feature.properties.label1;
+    var popupContent = "<b>SEP:</b> " + feature.properties.label1 + '<br />' /*+ 
+                "<b>Percentage:</b>" + " " + dict[feature.properties.label1]*/;
     layer.bindPopup(popupContent);
     console.log(feature.properties.label1);
     var label = L.marker(layer.getBounds().getCenter(), {
@@ -216,18 +229,26 @@ function onEachFeatureSep(feature, layer) {
     }).addTo(mymap);
 
     layer.on({
-        mouseover: highlightFeature,
+        mouseover: highlightFeatureSep,
         mouseout: resetHighlight,
         click: zoomToFeature
     });
 }
 
-function onEachFeatureZip(feature, layer) {
-    //var popupContent = "<b>SEP:</b> " + feature.properties.label1;
-    //layer.bindPopup(popupContent);
+function onEachFeatureZip(feature, layer, dict) {
+    var popupContent = "<b>Zipcode:</b> " + feature.properties.zipcode;
+    layer.bindPopup(popupContent);
+    /*var label = L.marker(layer.getBounds().getCenter(), {
+      icon: L.divIcon({
+        className: 'label',
+        html: feature.properties.zipcode,
+        iconSize: [100, 40],
+        color: 'black'
+      })
+    }).addTo(mymap);*/
 
     layer.on({
-        mouseover: highlightFeature,
+        mouseover: highlightFeatureZip,
         mouseout: resetHighlight,
         click: zoomToFeature
     });
@@ -285,38 +306,44 @@ function rebuild(args) {
 function requestBoundaryData(args, geojson, callback) {
 
     console.log(args);
+    console.log(args.boundary);
 
     $.getJSON('map/_data', args, function(data) {
 
         console.log(data);
         data = data.data;
         console.log(data);
-
-        buildDict(data, 'sep');
-        console.log(sep_dict);
+        buildDict(data, args.boundary);
+        console.log(dict);
 
         if(callback) {
             callback(geojson);
         }
 
     });
-    addMapLabel();
+    //addMapLabel(args.boundary);
 }
 
 //function to loop through an array and build a dictionary
 function buildDict(array,args) {
     len = array.length;
-    //clear sep_dict
-    sep_dict = {};
+    //clear dict
+    dict = {};
     for (var i = 0; i < len; i++) {
         if (args == 'sep') {
             key = array[i]["sep"];
             value = array[i]["percentage"];
             console.log(key, ' ', value);
-            sep_dict[key] = value;
+            dict[key] = value;
+        } else
+        {
+            key = array[i]["zipcode"];
+            value = array[i]["percentage"];
+            console.log(key, ': ', value);
+            dict[key] = value;
         }
     }
-    return sep_dict;
+    return dict;
 }
 
 //to build the origin and destination points arrays
@@ -479,77 +506,49 @@ function toggle_tb(){
        });
 }
 
-//add label to map
-function addLabel() {
+pointLegend.onAdd = function (map) {
 
-    if(hasLegend) {
-        return
-    }
+    var div = L.DomUtil.create('div', 'info legend');
+    categories = ['ORIGIN','DESTINATION'];
 
-    var legend = L.control({position: 'bottomleft'});
+    for (var i = 0; i < categories.length; i++) {
+        div.innerHTML +=
+            '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
+             (categories[i] ? categories[i] + '<br>' : '+');
 
-    legend.onAdd = function (map) {
-
-        var div = L.DomUtil.create('div', 'info legend');
-        categories = ['ORIGIN','DESTINATION'];
-
-        for (var i = 0; i < categories.length; i++) {
-            div.innerHTML +=
-                '<i class="circle" style="background:' + getColor(categories[i]) + '"></i> ' +
-                 (categories[i] ? categories[i] + '<br>' : '+');
-
-        }
-
-        return div;
-    };
-
-    legend.addTo(mymap);
-
-    hasLegend = true;
-
-}
-
-//add label to map
-function addMapLabel() {
-    if(hasLegend) {
-        return
-    }
-
-    var legend = L.control({position: 'bottomright'});
-
-    legend.onAdd = function (map) {
-
-    var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 5, 10, 20, 30, 40, 50, 60],
-        labels = [];
-        //labels = [(title.bold()).fontsize(3)],
-        //from, to;
-
-    // loop through our density intervals and generate a label with a colored square for each interval
-    /*for (var i = 0; i < grades.length; i++) {
-        from = grades [i];
-        to = grades[i+1]-1;
-
-    labels.push(
-        '<i style="background:' + getLongColor(from + 1) + '"></i> ' +
-        from + (to ? '&ndash;' + to : '+'));
-        }
-        div.innerHTML = labels.join('<br>');
-        return div;*/
-    for (var i = 0; i < grades.length; i++) {
-    div.innerHTML +=
-        '<i style="background:' + getBdyColor(grades[i] + 1) + '"></i> ' +
-        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
     }
 
     return div;
+};
 
+sepLegend.onAdd = function (map) {
 
-        };
+    var div = L.DomUtil.create('div', 'info legend'),
+    grades = [0, 5, 10, 20, 30, 40, 50, 60],
+    labels = [];
 
-    legend.addTo(mymap);
-    hasLegend = true;
-}
+    for (var i = 0; i < grades.length; i++) {
+
+            div.innerHTML +=
+            '<i style="background:' + getSepColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+    return div;
+};
+
+zipLegend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+    grades = [0, 1, 2, 5, 10, 15, 20, 30],
+    labels = [];
+
+    for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+            '<i style="background:' + getZipColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+    return div;
+};
 
 function getColor(d) {
     return  d == 'ORIGIN' ? "#259CEF" :
@@ -567,7 +566,7 @@ function getBaseColor(rte) {
                         '#1c4ca5' ;
 }
 
-function getBdyColor(pct) {
+function getSepColor(pct) {
     return  pct > 60 ? '#d73027' :
             pct > 50 ? '#f46d43' :
             pct > 40 ? '#fdae61' :
@@ -576,4 +575,23 @@ function getBdyColor(pct) {
             pct > 10 ? '#a6d96a' :
             pct > 5  ? '#66bd63' :
                        '#1a9850';
+}
+
+function getZipColor(pct) {
+    return  pct > 30 ? '#d73027' :
+            pct > 20 ? '#f46d43' :
+            pct > 15 ? '#fdae61' :
+            pct > 10 ? '#fee08b' :
+            pct > 5 ? '#d9ef8b' :
+            pct > 2 ? '#a6d96a' :
+            pct > 1  ? '#66bd63' :
+                       '#1a9850';
+}
+
+//function to remove legends
+function removeLegend()
+{
+    mymap.removeControl(pointLegend);
+    mymap.removeControl(sepLegend);
+    mymap.removeControl(zipLegend);
 }
