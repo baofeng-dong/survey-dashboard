@@ -11,11 +11,47 @@ function addMapview () {
             //clear layers
             removeLayers(mymap);
             buildHeatmap(sel_args, addOriginHeatMap, addDestHeatMap);
+        } else if ($('input.checkview')[3].checked) {
+            requestBoundaryData(sel_args, zipLayer, addBoundaryLayer);
         } else if ($('input.checkview')[4].checked) {
             requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
         }
 }
 
+//function to reset sel_args values to empty when switching checkbox
+
+function emptyArgs(sel_args)
+{
+    len = sel_args.length;
+    var props = Object.keys(sel_args);
+    for (var i = 0; i < len; i++)
+    {
+        console.log(sel_args[props[i]]);
+        sel_args[props[i]] = null;
+    }
+}
+
+//function to reset sel_args values
+function resetArgs() {
+    sel_args = {
+        rte : "",
+        dir : "",
+        day : "",
+        tod : "",
+        orig : "",
+        dest : "",
+        travel: "",
+        satisfaction: "",
+        boundary: "",
+        dest_sep: "",
+        dest_zip: ""
+    }
+}
+
+function resetZipSep() {
+    sel_args.dest_zip = null;
+    sel_args.dest_sep = null;
+}
 //remove layers
 function removeLayers(map) { 
     map.eachLayer(function(layer) {
@@ -174,6 +210,7 @@ function highlightFeatureSep(e) {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
     }
+    infoSep.update(layer.feature.properties);
 }
 
 //function to highlight zip layer when mouseover
@@ -182,7 +219,7 @@ function highlightFeatureZip(e) {
     var dest_zip = layer.feature.properties.zipcode;
     sel_args.dest_zip = dest_zip;
     requestBoundaryData(sel_args, zipLayer, addBoundaryLayer);
-    layer.openPopup();
+    //layer.openPopup();
     layer.setStyle({
         weight: 5,
         color: '#666',
@@ -193,13 +230,13 @@ function highlightFeatureZip(e) {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
     }
+    infoZip.update(layer.feature.properties);
 }
 //reset style on mouseout
 function resetHighlight(e) {
     var layer = e.target;
     boundary.resetStyle(layer);
     //layer.closePopup();
-
 }
 
 //switch on each feature based on boundary layer
@@ -215,18 +252,18 @@ function switchFeature(geojson) {
 
 //use onEachFeature option to add listeners on sep layers
 function onEachFeatureSep(feature, layer) {
-    var popupContent = "<b>SEP:</b> " + feature.properties.label1 + '<br />' /*+ 
-                "<b>Percentage:</b>" + " " + dict[feature.properties.label1]*/;
-    layer.bindPopup(popupContent);
+    //var popupContent = "<b>SEP:</b> " + feature.properties.label1 + '<br />' + 
+                //"<b>Percentage:</b>" + " " + dict[feature.properties.label1];
+    //layer.bindPopup(popupContent);
     console.log(feature.properties.label1);
-    var label = L.marker(layer.getBounds().getCenter(), {
+    /*var label = L.marker(layer.getBounds().getCenter(), {
       icon: L.divIcon({
         className: 'label',
         html: feature.properties.label1,
         iconSize: [100, 40],
         color: 'black'
       })
-    }).addTo(mymap);
+    }).addTo(mymap);*/
 
     layer.on({
         mouseover: highlightFeatureSep,
@@ -236,8 +273,8 @@ function onEachFeatureSep(feature, layer) {
 }
 
 function onEachFeatureZip(feature, layer, dict) {
-    var popupContent = "<b>Zipcode:</b> " + feature.properties.zipcode;
-    layer.bindPopup(popupContent);
+    //var popupContent = "<b>Zipcode:</b> " + feature.properties.zipcode;
+    //layer.bindPopup(popupContent);
     /*var label = L.marker(layer.getBounds().getCenter(), {
       icon: L.divIcon({
         className: 'label',
@@ -252,6 +289,30 @@ function onEachFeatureZip(feature, layer, dict) {
         mouseout: resetHighlight,
         click: zoomToFeature
     });
+}
+
+infoZip.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'infohover');
+        this.update();
+        return this._div;
+    };
+
+infoSep.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'infohover');
+        this.update();
+        return this._div;
+    };
+
+infoZip.update = function (props) {
+this._div.innerHTML = '<h4>Zipcode</h4>' +  (props ?
+'<b>' + props.zipcode + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.zipcode] + '</b><br />'
+: 'Hover over a zipcode');
+} 
+
+infoSep.update = function (props) {
+this._div.innerHTML = '<h4>SEP</h4>' +  (props ?
+'<b>' + props.label1 + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.label1] + '</b><br />'
+: 'Hover over a SEP area');
 }
 
 //function to send query to map/_query to args and build the points map
@@ -578,14 +639,15 @@ function getSepColor(pct) {
 }
 
 function getZipColor(pct) {
-    return  pct > 30 ? '#d73027' :
-            pct > 20 ? '#f46d43' :
-            pct > 15 ? '#fdae61' :
-            pct > 10 ? '#fee08b' :
-            pct > 5 ? '#d9ef8b' :
-            pct > 2 ? '#a6d96a' :
-            pct > 1  ? '#66bd63' :
-                       '#1a9850';
+    return  pct > 30 ? '#f46d43' :
+            pct > 30 ? '#f46d43' :
+            pct > 20 ? '#fdae61' :
+            pct > 15 ? '#fee08b' :
+            pct > 10 ? '#ffffbf' :
+            pct > 5  ? '#e6f598' :
+            pct > 2  ? '#abdda4' :
+            pct > 1  ? '#66c2a5' :
+                       '#3288bd';
 }
 
 //function to remove legends
@@ -594,4 +656,6 @@ function removeLegend()
     mymap.removeControl(pointLegend);
     mymap.removeControl(sepLegend);
     mymap.removeControl(zipLegend);
+    mymap.removeControl(infoZip);
+    mymap.removeControl(infoSep);
 }
