@@ -10,6 +10,10 @@
     var tmLayer = "tm_fill.geojson";
     var zipLayer = "zipcode_tm.geojson";
     var boundary;
+    var sepLegend = L.control({position: 'bottomright'});
+    var zipLegend = L.control({position: 'bottomright'});
+    var pointLegend = L.control({position: 'bottomright'});
+    var dict = {}; //percentage data dictionary
 //dictionary for storing query params and values
     var sel_args = {
         rte : "",
@@ -21,7 +25,8 @@
         travel: "",
         satisfaction: "",
         boundary: "",
-        dest_sep: ""
+        dest_sep: "",
+        dest_zip: ""
     }
 
     //creates a list to store origin and destination latlng objects
@@ -123,7 +128,10 @@ $(document).ready(function() {
     geocoder.addTo(mymap);
 
     //add TriMet service district boundary to map on load
-    addLayer("tm_fill.geojson");
+    addBoundaryLayer(tmLayer);
+
+    //add point legend on load
+    pointLegend.addTo(mymap);
 
     //set mapview checkbox for point map true
     $('input.checkview')[0].checked = true;
@@ -138,8 +146,8 @@ $(document).ready(function() {
                 //clear layers
                 resetLayers();
                 removeLayers(mymap);
-
-                addLayer(tmLayer);
+                removeLegend();
+                addBoundaryLayer(tmLayer);
                 rebuild(sel_args);
                 if (sel_args.rte && sel_args.dir) {
                     rebuildPath(sel_args);
@@ -151,7 +159,7 @@ $(document).ready(function() {
             } else if ($('input.checkview')[1].checked) {
                 resetLayers();
                 removeLayers(mymap);
-                addLayer(tmLayer);
+                addBoundaryLayer(tmLayer);
                 buildHeatmap(sel_args, addOriginHeatMap, function(){});
                 if (sel_line && sel_dir !== null) {
                     addRouteJson(sel_line,0);
@@ -161,7 +169,7 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer(tmLayer);
+                addBoundaryLayer(tmLayer);
                 buildHeatmap(sel_args, function(){}, addDestHeatMap);
                 console.log("dest heatmap added!");
                 if (sel_line && sel_dir !== null) {
@@ -172,32 +180,35 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer(tmLayer);
-                addLayer();
+                addBoundaryLayer(tmLayer);
+                removeLegend();
+                zipLegend.addTo(mymap);
                 console.log("zipcode checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
                 console.log("boundary selected: " + sel_boundary);
                 sel_args.boundary = sel_boundary;
-                requestBoundaryData(sel_args, zipLayer, addLayer);
+                requestBoundaryData(sel_args, zipLayer, addBoundaryLayer);
 
             } else if ($('input.checkview')[4].checked) {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer(tmLayer);
-                //addLayer("sep_bounds.geojson");
+                addBoundaryLayer(tmLayer);
+                removeLegend();
+                sepLegend.addTo(mymap);
+                //addBoundaryLayer("sep_bounds.geojson");
                 console.log("sep checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
                 console.log("boundary selected: " + sel_boundary);
                 sel_args.boundary = sel_boundary;
-                requestBoundaryData(sel_args, sepLayer, addLayer);
+                requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
             } else {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
-                addLayer(tmLayer);
+                addBoundaryLayer(tmLayer);
                 console.log("taz checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
@@ -250,7 +261,7 @@ $(document).ready(function() {
         resetLayers();
         //add mapview based on which checkbox is selected
         addMapview();
-        //requestBoundaryData(sel_args, sepLayer, addLayer);
+        //requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
         if (sel_line && sel_dir !== null) {
             addRouteJson(sel_line,0);
             console.log("route geojson added!");
