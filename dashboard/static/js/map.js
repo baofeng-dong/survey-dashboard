@@ -13,6 +13,8 @@
     var sepLegend = L.control({position: 'bottomright'});
     var zipLegend = L.control({position: 'bottomright'});
     var pointLegend = L.control({position: 'bottomright'});
+    var infoZip = L. control(); //for storing info when mouseover
+    var infoSep = L. control();
     var dict = {}; //percentage data dictionary
 //dictionary for storing query params and values
     var sel_args = {
@@ -178,11 +180,13 @@ $(document).ready(function() {
                 }
             } else if ($('input.checkview')[3].checked) {
                 //clear and reset layers
+                resetArgs();
                 resetLayers();
                 removeLayers(mymap);
                 addBoundaryLayer(tmLayer);
                 removeLegend();
                 zipLegend.addTo(mymap);
+                infoZip.addTo(mymap);
                 console.log("zipcode checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
@@ -194,9 +198,12 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
+                resetArgs();
+                console.log(sel_args);
                 addBoundaryLayer(tmLayer);
                 removeLegend();
                 sepLegend.addTo(mymap);
+                infoSep.addTo(mymap);
                 //addBoundaryLayer("sep_bounds.geojson");
                 console.log("sep checkbox checked!");
                 console.log($(this).attr("value"));
@@ -227,6 +234,7 @@ $(document).ready(function() {
         sel_line = $(this).attr('rte');
         console.log(sel_line);
         sel_args.rte = sel_line;
+        resetZipSep();
         sel_dir = '';
         console.log(sel_dir);
         sel_args.dir = sel_dir;
