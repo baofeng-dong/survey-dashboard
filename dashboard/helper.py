@@ -112,7 +112,47 @@ class Helper(object):
 
     @staticmethod
     def query_zipcode_data(where):
-        pass
+        ret_val = []
+        query_args = {}
+        where = where
+
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            willing = '1' and
+                            origin_zip is not null {0}),
+                zipcount as (
+                        select origin_zip,
+                        count(*) as zip_count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by origin_zip
+                        order by origin_zip)
+
+                select * from zipcount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        ZIPCODE = 0
+        COUNT = 1
+        PER = 2
+
+        # each record will be converted as json
+        # and sent back to page
+        for record in query:
+            data = {}
+            data['zipcode'] = record[ZIPCODE]
+            data['count'] = record[COUNT]
+            data['percentage'] = float(record[PER])
+
+            ret_val.append(data)
+        web_session.close()
+        return ret_val
 
 
     @staticmethod
@@ -407,6 +447,9 @@ class Helper(object):
 
             if key == "dest_sep":
                 where += " AND f.dest_sep='{0}'".format(value)
+
+            if key == "dest_zip":
+                where += " AND f.dest_zip='{0}'".format(value)
 
             if key == "orig" and value in lookupaddress:
                 where += " AND f.q3_orig_type='{0}'".format(lookupaddress[value])
