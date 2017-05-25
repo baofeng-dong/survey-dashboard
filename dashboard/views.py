@@ -79,6 +79,9 @@ def sep_query():
     if sel_boundary == 'zipcode':
         response = Helper.query_zipcode_data(where=where)
 
+    if sel_boundary == 'cty':
+        response = Helper.query_cty_data(where=where)
+
     return jsonify(data=response)
 
 @app.route('/data')
