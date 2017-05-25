@@ -1,4 +1,3 @@
-
     var sel_line = '';
     var sel_dir = '';
     var sel_boundary = '';
@@ -9,12 +8,15 @@
     var sepLayer = "sep_bounds.geojson";
     var tmLayer = "tm_fill.geojson";
     var zipLayer = "zipcode_tm.geojson";
+    var ctyLayer = "co_fill_tm.geojson";
     var boundary;
     var sepLegend = L.control({position: 'bottomright'});
     var zipLegend = L.control({position: 'bottomright'});
     var pointLegend = L.control({position: 'bottomright'});
+    var ctyLegend = L.control({position: 'bottomright'});
     var infoZip = L. control(); //for storing info when mouseover
     var infoSep = L. control();
+    var infoCty = L.control();
     var dict = {}; //percentage data dictionary
 //dictionary for storing query params and values
     var sel_args = {
@@ -28,13 +30,13 @@
         satisfaction: "",
         boundary: "",
         dest_sep: "",
-        dest_zip: ""
+        dest_zip: "",
+        dest_cty: ""
     }
 
     //creates a list to store origin and destination latlng objects
     var originList = [];
     var destinationList = [];
-
     var dir_lookup = {};
     // creates layers for orig and dest markers
     var origMarkersLayer = new L.LayerGroup();
@@ -83,7 +85,6 @@
                 opacity: 0.9,
                 weight:5
     }
-
     var heatmapOptions = {
                 radius: 25,
                 maxZoom:16
@@ -213,15 +214,19 @@ $(document).ready(function() {
                 requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
             } else {
                 //clear and reset layers
+                resetArgs();
                 resetLayers();
                 removeLayers(mymap);
                 addBoundaryLayer(tmLayer);
-                console.log("taz checkbox checked!");
+                removeLegend();
+                ctyLegend.addTo(mymap);
+                infoCty.addTo(mymap);
+                console.log("county checkbox checked!");
                 console.log($(this).attr("value"));
                 sel_boundary = $(this).attr("value");
                 console.log("boundary selected: " + sel_boundary);
                 sel_args.boundary = sel_boundary;
-                requestBoundaryData(sel_args);
+                requestBoundaryData(sel_args, ctyLayer, addBoundaryLayer);
             }
         });
 
@@ -397,7 +402,6 @@ $(document).ready(function() {
         addMapview();
     });
 });
-
 
     //set when a route, direction or user is selected from dropdowns
     $(directions).each(function(index, item) {
