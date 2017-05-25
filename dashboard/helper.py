@@ -154,6 +154,50 @@ class Helper(object):
         web_session.close()
         return ret_val
 
+    @staticmethod
+    def query_cty_data(where):
+        ret_val = []
+        query_args = {}
+        where = where
+
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            willing = '1' and
+                            origin_cty is not null {0}),
+                ctycount as (
+                        select origin_cty,
+                        count(*) as cty_count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by origin_cty
+                        order by origin_cty)
+
+                select * from ctycount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        COUNTY = 0
+        COUNT = 1
+        PER = 2
+
+        # each record will be converted as json
+        # and sent back to page
+        for record in query:
+            data = {}
+            data['COUNTY'] = record[COUNTY]
+            data['count'] = record[COUNT]
+            data['percentage'] = float(record[PER])
+
+            ret_val.append(data)
+        web_session.close()
+        return ret_val
+
 
     @staticmethod
     def query_map_data(where):
@@ -450,6 +494,9 @@ class Helper(object):
 
             if key == "dest_zip":
                 where += " AND f.dest_zip='{0}'".format(value)
+
+            if key == "dest_cty":
+                where += " AND f.dest_cty='{0}'".format(value)
 
             if key == "orig" and value in lookupaddress:
                 where += " AND f.q3_orig_type='{0}'".format(lookupaddress[value])
