@@ -15,6 +15,8 @@ function addMapview () {
             requestBoundaryData(sel_args, zipLayer, addBoundaryLayer);
         } else if ($('input.checkview')[4].checked) {
             requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
+        } else {
+            requestBoundaryData(sel_args, ctyLayer, addBoundaryLayer);
         }
 }
 
@@ -44,13 +46,15 @@ function resetArgs() {
         satisfaction: "",
         boundary: "",
         dest_sep: "",
-        dest_zip: ""
+        dest_zip: "",
+        dest_cty: ""
     }
 }
 
 function resetZipSep() {
     sel_args.dest_zip = null;
     sel_args.dest_sep = null;
+    sel_args.dest_cty = null;
 }
 //remove layers
 function removeLayers(map) { 
@@ -155,8 +159,10 @@ function switchStyle(geojson) {
         return style
     } else if (geojson == sepLayer){
         return sepStyle
-    } else {
+    } else if (geojson == zipLayer) {
         return zipStyle
+    } else {
+        return ctyStyle
     }
 }
 
@@ -186,7 +192,17 @@ function sepStyle(feature){
 function zipStyle(feature){
     return {
         color: getZipColor(dict[feature.properties.zipcode]),
-        weight: 2.0,
+        weight: 1.0,
+        opacity: 0.8,
+        fillOpacity: 0.6
+    }
+}
+
+//style for county
+function ctyStyle(feature){
+    return {
+        color: getCtyColor(dict[feature.properties.county]),
+        weight: 1.0,
         opacity: 0.8,
         fillOpacity: 0.6
     }
@@ -232,6 +248,26 @@ function highlightFeatureZip(e) {
     }
     infoZip.update(layer.feature.properties);
 }
+
+//function to highlight county layer when mouseover
+function highlightFeatureCty(e) {
+    var layer = e.target;
+    var dest_cty = layer.feature.properties.county;
+    sel_args.dest_cty = dest_cty;
+    requestBoundaryData(sel_args, ctyLayer, addBoundaryLayer);
+    //layer.openPopup();
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+    infoCty.update(layer.feature.properties);
+}
 //reset style on mouseout
 function resetHighlight(e) {
     var layer = e.target;
@@ -245,6 +281,8 @@ function switchFeature(geojson) {
         return onEachFeatureSep
     } else if (geojson == zipLayer){
         return onEachFeatureZip
+    } else if (geojson == ctyLayer) {
+        return onEachFeatureCty
     } else {
         return
     }
@@ -272,7 +310,7 @@ function onEachFeatureSep(feature, layer) {
     });
 }
 
-function onEachFeatureZip(feature, layer, dict) {
+function onEachFeatureZip(feature, layer) {
     //var popupContent = "<b>Zipcode:</b> " + feature.properties.zipcode;
     //layer.bindPopup(popupContent);
     /*var label = L.marker(layer.getBounds().getCenter(), {
@@ -291,6 +329,15 @@ function onEachFeatureZip(feature, layer, dict) {
     });
 }
 
+function onEachFeatureCty(feature, layer) {
+
+    layer.on({
+        mouseover: highlightFeatureCty,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+}
+
 infoZip.onAdd = function (map) {
         this._div = L.DomUtil.create('div', 'infohover');
         this.update();
@@ -303,16 +350,28 @@ infoSep.onAdd = function (map) {
         return this._div;
     };
 
+infoCty.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'infohover');
+        this.update();
+        return this._div;
+    };
+
 infoZip.update = function (props) {
-this._div.innerHTML = '<h4>Zipcode</h4>' +  (props ?
+this._div.innerHTML = '<h4>Zipcode As Destination</h4>' +  (props ?
 '<b>' + props.zipcode + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.zipcode] + '</b><br />'
 : 'Hover over a zipcode');
 } 
 
 infoSep.update = function (props) {
-this._div.innerHTML = '<h4>SEP</h4>' +  (props ?
+this._div.innerHTML = '<h4>SEP As Destination</h4>' +  (props ?
 '<b>' + props.label1 + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.label1] + '</b><br />'
 : 'Hover over a SEP area');
+}
+
+infoCty.update = function (props) {
+this._div.innerHTML = '<h4>County As Destination</h4>' +  (props ?
+'<b>' + props.county + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.county] + '</b><br />'
+: 'Hover over a county area');
 }
 
 //function to send query to map/_query to args and build the points map
@@ -396,9 +455,15 @@ function buildDict(array,args) {
             value = array[i]["percentage"];
             console.log(key, ' ', value);
             dict[key] = value;
-        } else
+        } else if (args == 'zipcode')
         {
             key = array[i]["zipcode"];
+            value = array[i]["percentage"];
+            console.log(key, ': ', value);
+            dict[key] = value;
+        } else
+        {
+            key = array[i]["COUNTY"];
             value = array[i]["percentage"];
             console.log(key, ': ', value);
             dict[key] = value;
@@ -611,6 +676,20 @@ zipLegend.onAdd = function (map) {
     return div;
 };
 
+ctyLegend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+    grades = [0, 5, 10, 20, 30, 40, 50, 60],
+    labels = [];
+
+    for (var i = 0; i < grades.length; i++) {
+            div.innerHTML +=
+            '<i style="background:' + getCtyColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+    return div;
+};
+
 function getColor(d) {
     return  d == 'ORIGIN' ? "#259CEF" :
             d == 'DESTINATION' ? "#4BF01B" :
@@ -650,12 +729,25 @@ function getZipColor(pct) {
                        '#3288bd';
 }
 
+function getCtyColor(pct) {
+    return  pct > 60 ? '#d73027' :
+            pct > 50 ? '#f46d43' :
+            pct > 40 ? '#fdae61' :
+            pct > 30 ? '#fee090' :
+            pct > 20 ? '#e0f3f8' :
+            pct > 10 ? '#abd9e9' :
+            pct > 5  ? '#74add1' :
+                       '#4575b4';
+}
+
 //function to remove legends
 function removeLegend()
 {
     mymap.removeControl(pointLegend);
     mymap.removeControl(sepLegend);
     mymap.removeControl(zipLegend);
+    mymap.removeControl(ctyLegend);
     mymap.removeControl(infoZip);
     mymap.removeControl(infoSep);
+    mymap.removeControl(infoCty);
 }
