@@ -91,12 +91,12 @@ class Helper(object):
                             f.willing in ('1','2') and
                             f.origin_sep is not null {0}),
                 sepcount as (
-                        select f.origin_sep,
+                        select origin_sep,
                         count(*) as sep_count,
                         round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
                         from survey
-                        group by f.origin_sep
-                        order by f.origin_sep)
+                        group by origin_sep
+                        order by origin_sep)
 
                 select * from sepcount;""".format(where)
         #query_string += where
