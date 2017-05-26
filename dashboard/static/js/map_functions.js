@@ -358,19 +358,22 @@ infoCty.onAdd = function (map) {
 
 infoZip.update = function (props) {
 this._div.innerHTML = '<h4>Zipcode As Destination</h4>' +  (props ?
-'<b>' + props.zipcode + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.zipcode] + '</b><br />'
+'<b>' + props.zipcode + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.zipcode] + '<br>' +
+'<b>Origin Trips Number :</b> ' + dictCount[props.zipcode]+ '</b><br />'
 : 'Hover over a zipcode');
 } 
 
 infoSep.update = function (props) {
 this._div.innerHTML = '<h4>SEP As Destination</h4>' +  (props ?
-'<b>' + props.label1 + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.label1] + '</b><br />'
+'<b>' + props.label1 + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.label1] + '<br>' +
+'<b>Origin Trips Number :</b> ' + dictCount[props.label1]+ '</b><br />'
 : 'Hover over a SEP area');
 }
 
 infoCty.update = function (props) {
 this._div.innerHTML = '<h4>County As Destination</h4>' +  (props ?
-'<b>' + props.county + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.county] + '</b><br />'
+'<b>' + props.county + '</b><br />' + '<b>Origin Trips Percentage :</b> ' + dict[props.county] + '<br>' +
+'<b>Origin Trips Number :</b> ' + dictCount[props.county]+  '</b><br />'
 : 'Hover over a county area');
 }
 
@@ -435,6 +438,8 @@ function requestBoundaryData(args, geojson, callback) {
         console.log(data);
         buildDict(data, args.boundary);
         console.log(dict);
+        buildCountDict(data, args.boundary);
+        console.log(dictCount);
 
         if(callback) {
             callback(geojson);
@@ -470,6 +475,34 @@ function buildDict(array,args) {
         }
     }
     return dict;
+}
+
+//function to loop through an array and build a count dictionary
+function buildCountDict(array,args) {
+    len = array.length;
+    //clear dict
+    dictCount = {};
+    for (var i = 0; i < len; i++) {
+        if (args == 'sep') {
+            key = array[i]["sep"];
+            value = array[i]["count"];
+            console.log(key, ' ', value);
+            dictCount[key] = value;
+        } else if (args == 'zipcode')
+        {
+            key = array[i]["zipcode"];
+            value = array[i]["count"];
+            console.log(key, ': ', value);
+            dictCount[key] = value;
+        } else
+        {
+            key = array[i]["COUNTY"];
+            value = array[i]["count"];
+            console.log(key, ': ', value);
+            dictCount[key] = value;
+        }
+    }
+    return dictCount;
 }
 
 //to build the origin and destination points arrays
