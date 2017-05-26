@@ -271,20 +271,20 @@ $('#filter_tod a').on('click', function() {
 });
 
 
-/*$('#filter_fpl a').on('click', function() {
+$('#filter_satisfaction a').on('click', function() {
     reset();
-    var sel_fpl = this.text
-    console.log("fpl selected: " + sel_fpl)
-    if (sel_fpl == 'All') {
-        sel_args.fpl = null;
+    var sel_satisfaction = this.text
+    console.log("satisfaction selected: " + sel_satisfaction)
+    if (sel_satisfaction == 'All') {
+        sel_args.satisfaction = null;
     }
     else {
-    sel_args.fpl = sel_fpl;
+    sel_args.satisfaction = sel_satisfaction;
     }
-    $("#fpl_btn").text(this.text+' ').append('<span class="caret"></span>');
+    $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
     requestdata();
 
-});*/
+});
 
 function requestdata() {
     $.getJSON('/results/_data', sel_args, function(data) {
