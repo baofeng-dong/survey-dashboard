@@ -224,6 +224,103 @@ class Helper(object):
         return ret_val
 
     @staticmethod
+    def get_destination(where, qnum):
+        ret_val = []
+        where = where
+        bar_chart = pygal.Bar(print_values=True)
+    
+        bar_chart.title = 'Trip Destination Types'
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            f.willing in ('1','2') and
+                            f.q4_dest_type is not null {0}),
+                destcount as (
+                        select 
+                            case
+                                WHEN q4_dest_type = '1' THEN 'Home'
+                                WHEN q4_dest_type = '2' THEN 'Work'
+                                WHEN q4_dest_type = '3' THEN 'School'
+                                WHEN q4_dest_type = '4' THEN 'Recreation'
+                                WHEN q4_dest_type = '5' THEN 'Shopping'
+                                WHEN q4_dest_type = '6' THEN 'Personal business'
+                                WHEN q4_dest_type = '7' THEN 'Visit family or friends'
+                                WHEN q4_dest_type = '8' THEN 'Medical appointment'
+                                WHEN q4_dest_type = '9' THEN 'Other'
+                                else                         ''
+                            end as dest_type,
+                        count(*) as count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by q4_dest_type
+                        order by pct desc)
+
+                select * from destcount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        # each record will be converted as json
+        # and sent back to page
+        ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
+        debug(ret_val)
+        for row in ret_val:
+            bar_chart.add(str(row[0]), int(row[1]))
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+        web_session.close()
+        return ret_val
+
+    @staticmethod
+    def get_travel_change(where, qnum):
+        ret_val = []
+        where = where
+        bar_chart = pygal.Bar(print_values=True)
+    
+        bar_chart.title = 'Transit Usage Compared to A Year Ago'
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            f.willing in ('1','2') and
+                            f.q7_travel_change is not null {0}),
+                changecount as (
+                        select 
+                            case
+                                WHEN q7_travel_change = '1' THEN 'More'
+                                WHEN q7_travel_change = '2' THEN 'Same'
+                                WHEN q7_travel_change = '3' THEN 'Less'
+                                WHEN q7_travel_change = '4' THEN 'Do not know'
+                                else                             ''
+                            end as ride_change,
+                        count(*) as count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by q7_travel_change
+                        order by pct desc)
+
+                select * from changecount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        # each record will be converted as json
+        # and sent back to page
+        ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
+        debug(ret_val)
+        for row in ret_val:
+            bar_chart.add(str(row[0]), int(row[1]))
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+        web_session.close()
+        return ret_val
+
+    @staticmethod
     def query_zipcode_data(where):
         ret_val = []
         query_args = {}
@@ -601,6 +698,9 @@ class Helper(object):
             if key == "tod":
                 #debug(isinstance(value, str))
                 where += " AND f.time_of_day='{0}'".format(value)
+
+            if key == "vehicle" and value in lookupvehicle:
+                where += " AND rte {0}".format(lookupvehicle[value])
 
             if key == "dest_sep":
                 where += " AND f.dest_sep='{0}'".format(value)
