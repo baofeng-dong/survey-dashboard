@@ -44,7 +44,7 @@ def result():
     return render_template("results.html",
         routes=routes,directions=directions, questions=questions)
 
-@app.route('/results/_data')
+@app.route('/results/_data', methods=['GET'])
 def request_query():
     response = []
     where = ""
