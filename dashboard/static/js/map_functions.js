@@ -184,7 +184,7 @@ function sepStyle(feature){
         weight: 2.0,
         opacity: 0.8,
         color: 'white',
-        fillOpacity: 0.7
+        fillOpacity: 0.6
     }
 }
 
@@ -536,7 +536,11 @@ function rebuildPath(args) {
             //defines points pair list for the path
             var odPair = [olatlng, dlatlng];
             //defines the path that links orig and dest markers
-            var pairPath = new L.Polyline(odPair, style);
+            var pairPath = new L.Polyline(odPair, pathStyle);
+            var transparentPath = new L.Polyline(odPair, {
+                'weight': 10,
+                'opacity':0
+            })
 
             var popup = L. popup().setContent(
                 "<b>Route:</b>" + " " + item.rte_desc + '<br />' + 
@@ -554,24 +558,27 @@ function rebuildPath(args) {
                 "<b>Income:</b>" + " " + item.income
                 );
 
-            pairPath.bindPopup(popup);
+            transparentPath.bindPopup(popup);
             
-            pairPath.on('mouseover', function(e) {
+            transparentPath.on('mouseover', function(e) {
 
-                var path = e.target;
-                path.setStyle({
+                //var path = e.target;
+                pairPath.setStyle({
                     color:'purple',
                     opacity: 0.9,
                     weight:5,
                     dashArray: '10,10'
                 });
-                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                    path.bringToFront();
-                }
+                /*if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    transparentPath.bringToFront();
+                    console.log("brought to front!");
+                }*/
             });
-            pairPath.on('mouseout', function(e) {
-                var path = e.target;
-                path.setStyle(style);
+            transparentPath.on('mouseout', function(e) {
+                //var path = e.target;
+                pairPath.setStyle(pathStyle);
+                console.log("reset style!");
+                //console.log(pathStyle);
             });
             //defines orig marker
             var orig_marker = L.circleMarker(olatlng, omarkerStyle);
@@ -579,6 +586,7 @@ function rebuildPath(args) {
             var dest_marker = L.circleMarker(dlatlng, dmarkerStyle);
             //adds the path to odPairLayerGroup
             odPairLayerGroup.addLayer(pairPath);
+            odPairLayerGroup.addLayer(transparentPath);
             odPairLayerGroup.addLayer(orig_marker);
             odPairLayerGroup.addLayer(dest_marker);
             //adds odPairLayerGroup to mymap
