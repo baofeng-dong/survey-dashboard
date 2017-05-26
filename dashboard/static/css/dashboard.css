@@ -195,13 +195,6 @@ table {
     width: auto;
 }
 
-#line-chart {
-    margin-top: 20px;
-    margin-left: 20px;
-    max-width: 1000px;
-    width: auto;
-}
-
 #message {
     margin-top: 60px;
     margin-left: 40px;
@@ -265,15 +258,29 @@ th {
     color: #777; 
 }
 
-#line-chart, #satisfaction, #origin, #destination, #travelchange, #gasoline, #ridership, #rideyears, #approval,
+#satisfaction, #origin, #destination, #travelchange, #gasoline, #ridership, #rideyears, #approval,
 #onechange, #age, #gender, #race, #disability, #transit, #vehicle, #house, #vecount, #income, #poverty
 {
-  max-width: 1000px;
-  width: 100%;
+  /*max-width: 1000px;*/
+  margin-left: 20px;
+  margin-top: 30px;
+  width: 40%;
+  float: left;
   height: auto;
   display: none;
 }
 
+#container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 10px,10px;
+}
+
+#line-chart {
+    margin-left: 20px;
+    width: 45%;
+    float: right;
+}
 
 #button-header {
 padding-left: 20px;
