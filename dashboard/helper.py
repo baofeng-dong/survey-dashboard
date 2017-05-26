@@ -38,6 +38,21 @@ class Helper(object):
         return ret_val
 
     @staticmethod
+    def get_questions():
+        ret_val = []
+        
+        web_session = Session()
+        questions = web_session.execute("""
+            SELECT num, questions
+            FROM odk.ques_lookup
+            ORDER BY num;""")
+
+        ret_val = [ [question[0], question[1]] for question in questions ]
+        web_session.close()
+        debug(ret_val)
+        return ret_val
+
+    @staticmethod
     def get_directions():
         ret_val = []
         web_session = Session()
@@ -109,6 +124,53 @@ class Helper(object):
         web_session.close()
         return ret_val
 
+    @staticmethod
+    def get_satisfaction(where, qnum):
+        ret_val = []
+        where = where
+        bar_chart = pygal.Bar(print_values=True)
+    
+        bar_chart.title = 'Customer Satisfaction'
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            f.willing = '1' and
+                            f.q1_satisfaction is not null {0}),
+                satisfactioncount as (
+                        select 
+                            CASE
+                                WHEN q1_satisfaction = '1' THEN 'Very satisfied'
+                                WHEN q1_satisfaction = '3' THEN 'Somewhat satisfied'
+                                WHEN q1_satisfaction = '4' THEN 'Neutral'
+                                WHEN q1_satisfaction = '5' THEN 'Somewhat dissatisfied'
+                                WHEN q1_satisfaction = '6' THEN 'Very dissatisfied'
+                                WHEN q1_satisfaction = '7' THEN 'Do not know'
+                                else                            ''
+                            END as satisfaction,
+                        count(*) as count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by q1_satisfaction
+                        order by pct desc)
+
+                select * from satisfactioncount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        # each record will be converted as json
+        # and sent back to page
+        ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
+        debug(ret_val)
+        for row in ret_val:
+            bar_chart.add(str(row[0]), int(row[1]))
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+        web_session.close()
+        return ret_val
 
     @staticmethod
     def query_zipcode_data(where):
@@ -121,8 +183,8 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            willing = '1' and
-                            origin_zip is not null {0}),
+                            f.willing = '1' and
+                            f.origin_zip is not null {0}),
                 zipcount as (
                         select origin_zip,
                         count(*) as zip_count,
@@ -165,8 +227,8 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            willing = '1' and
-                            origin_cty is not null {0}),
+                            f.willing = '1' and
+                            f.origin_cty is not null {0}),
                 ctycount as (
                         select origin_cty,
                         count(*) as cty_count,
