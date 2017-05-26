@@ -11,7 +11,7 @@ var sel_args = {
     rte : "",
     dir : "",
     travel: "",
-    satisfaction: ""
+    satis: ""
     }
 
 //function for expanding/collapsing div content
@@ -276,10 +276,10 @@ $('#filter_satisfaction a').on('click', function() {
     var sel_satisfaction = this.text
     console.log("satisfaction selected: " + sel_satisfaction)
     if (sel_satisfaction == 'All') {
-        sel_args.satisfaction = null;
+        sel_args.satis = null;
     }
     else {
-    sel_args.satisfaction = sel_satisfaction;
+    sel_args.satis = sel_satisfaction;
     }
     $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
     requestdata();
