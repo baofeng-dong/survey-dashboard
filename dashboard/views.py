@@ -13,11 +13,14 @@ from decimal import Decimal
 from flask import make_response, Blueprint, redirect
 from flask import url_for,render_template, jsonify, request
 from sqlalchemy import func
-
+import pygal
+from pygal.style import DarkSolarizedStyle, LightStyle, CleanStyle, DarkStyle
 from .helper import Helper
 from dashboard import debug, error
 from dashboard import Session as Session
 from dashboard import app
+from .metadata import metadata
+from dashboard.auth import Auth
 
 
 @app.route('/')
@@ -34,7 +37,28 @@ def progress():
 
 @app.route('/results')
 def result():
-    return render_template("results.html")
+    routes = Helper.get_routes()
+    questions = Helper.get_questions()
+    directions = Helper.get_directions()
+    return render_template("results.html",
+        routes=routes,directions=directions, questions=questions)
+
+@app.route('/results/_data')
+def request_query():
+    response = []
+    where = ""
+    args = request.args
+
+    where = Helper.buildconditions(args)
+    debug(where)
+    qnum = int(request.args.get('qnum'))
+
+    if qnum == 1:
+        response = Helper.get_satisfaction(where=where, qnum=qnum)
+    if qnum == 2:
+        response = Helper.get_origin(where=where,qnum=qnum)
+
+    return jsonify(data=response, metadata=metadata[qnum])
 
 @app.route('/map')
 def map():
