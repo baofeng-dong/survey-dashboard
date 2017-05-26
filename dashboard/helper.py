@@ -88,15 +88,15 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            willing = '1' and
-                            origin_sep is not null {0}),
+                            f.willing in ('1','2') and
+                            f.origin_sep is not null {0}),
                 sepcount as (
-                        select origin_sep,
+                        select f.origin_sep,
                         count(*) as sep_count,
                         round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
                         from survey
-                        group by origin_sep
-                        order by origin_sep)
+                        group by f.origin_sep
+                        order by f.origin_sep)
 
                 select * from sepcount;""".format(where)
         #query_string += where
@@ -136,7 +136,7 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            f.willing = '1' and
+                            f.willing in ('1','2') and
                             f.q1_satisfaction is not null {0}),
                 satisfactioncount as (
                         select 
@@ -156,6 +156,57 @@ class Helper(object):
                         order by pct desc)
 
                 select * from satisfactioncount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        # each record will be converted as json
+        # and sent back to page
+        ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
+        debug(ret_val)
+        for row in ret_val:
+            bar_chart.add(str(row[0]), int(row[1]))
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+        web_session.close()
+        return ret_val
+
+    @staticmethod
+    def get_origin(where, qnum):
+        ret_val = []
+        where = where
+        bar_chart = pygal.Bar(print_values=True)
+    
+        bar_chart.title = 'Trip Origin Types'
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            f.willing in ('1','2') and
+                            f.q3_orig_type is not null {0}),
+                origincount as (
+                        select 
+                            case
+                                WHEN q3_orig_type = '1' THEN 'Home'
+                                WHEN q3_orig_type = '2' THEN 'Work'
+                                WHEN q3_orig_type = '3' THEN 'School'
+                                WHEN q3_orig_type = '4' THEN 'Recreation'
+                                WHEN q3_orig_type = '5' THEN 'Shopping'
+                                WHEN q3_orig_type = '6' THEN 'Personal business'
+                                WHEN q3_orig_type = '7' THEN 'Visit family or friends'
+                                WHEN q3_orig_type = '8' THEN 'Medical appointment'
+                                WHEN q3_orig_type = '9' THEN 'Other'
+                                else                         ''
+                            end as origin_type,
+                        count(*) as count,
+                        round(100*count(*)/(select count(*) from survey)::numeric,1) as pct
+                        from survey
+                        group by q3_orig_type
+                        order by pct desc)
+
+                select * from origincount;""".format(where)
 
         debug(query_string)
 
@@ -227,7 +278,7 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            f.willing = '1' and
+                            f.willing in ('1','2') and
                             f.origin_cty is not null {0}),
                 ctycount as (
                         select origin_cty,
