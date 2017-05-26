@@ -82,7 +82,7 @@
       <div class="dropdown">
         <button id="vehicle_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Vehicle
         <span class="caret"></span></button>
-        <ul id="filter_dest" class="dropdown-menu scrollable-menu" role="menu">
+        <ul id="filter_vehicle" class="dropdown-menu scrollable-menu" role="menu">
           <li role="presentation" class="dropdown-header">Vehicle</li>
           <li role="presentation" class="divider"></li>
             <li><a href="#">All</a></li>
@@ -145,7 +145,7 @@
 <!--<div id="button-header">
     <input type="button"  value="Hide" id="toggle">
 </div>-->
-
+<div id="container">
 <div id="satisfaction">
   <table id="satisfaction-table" class="table table-bordered">
     <tr>
@@ -336,6 +336,8 @@
 <div id="line-chart" style="display:none">
 
 </div>
+
+</div> <!-- container div -->
 
 <script>
     var questions = {{questions|tojson|safe}};
