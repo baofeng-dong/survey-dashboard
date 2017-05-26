@@ -56,12 +56,12 @@
     var hasLegend = false;
     var highLight = null;
     var selected;
-    var style = {
+    var pathStyle = {
                 color: '#ff6600',
-                weight: 2,
+                weight: 3,
                 opacity: 0.6,
                 smoothFactor: 1,
-                dashArray: '10,10',
+                dashArray: '10,15',
                 clickable: true
     };
     var dmarkerStyle = {
