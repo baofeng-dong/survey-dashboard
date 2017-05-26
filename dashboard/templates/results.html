@@ -3,10 +3,349 @@
 
 {% block content %}
 
-<div id='message'>
+<!--<div id='message'>
 <p>The results page will be updated once the Fall 2016 On-board survey is completed in early 2017</p>
 <p>Please click on <a href="{{ url_for('index') }}data"><b>Data</b></a>, <a href="{{ url_for('index') }}surveyors"><b>Surveyor</b></a>, or <a href="{{ url_for('index') }}map"><b>Map</b></a> tab to view survey data</p>
+</div>-->
+
+<div id="control-section">
+<!-- dropdowns that trigger ajax call to update table based on selection -->
+<div id="map-select">
+<div id="map-intro">
+    <h4><b>Survey Results Dashboard</b></h4>
+    <p>Note: select question, vehicle type, route, direction, day of week, and time of day to view survey data results.</p>
 </div>
+
+<table id="select-table">
+  <tr id="menu-dd">
+    <td style="padding-left: 1em" width="20%">
+      <div class="dropdown">
+        <button id="ques_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Questions
+        <span class="caret"></span></button>
+        <ul id="filter_ques" class="dropdown-menu scrollable-menu" role="menu">
+            <li role="presentation" class="divider"></li>
+            
+            {% for question in questions %}
+              <li><a href="#">{{ question[1] }}</a></li>
+            {% endfor %}
+          </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
+      <div class="btn-group" role="form">
+        <button id="line_btn" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Route    
+        <span class="caret"></span>
+        </button>
+        <ul id="filter_line" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Route</li>
+          <li role="presentation"><a href="#">All</a></li>
+          <li role="presentation" class="divider"></li>
+          {% for route in routes %}
+          <li><a href="#" rte="{{route['rte']}}">{{ route["rte_desc"] }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
+      <div class="dropdown">
+        <button id="day_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Day of Week
+        <span class="caret"></span></button>
+        <ul id="filter_day" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Day of Week</li>
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">Weekday</a></li>
+            <li><a href="#">Weekend</a></li>
+            <li><a href="#">Saturday</a></li>
+            <li><a href="#">Sunday</a></li>
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em" width="30%">
+      <div class="dropdown">
+        <button id="travel_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Travel Change
+        <span class="caret"></span></button>
+        <ul id="filter_travel" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Travel Change</li>
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">More</a></li>
+            <li><a href="#">Same</a></li>
+            <li><a href="#">Less</a></li>
+            <li><a href="#">Do not know</a></li>
+        </ul>
+      </div>
+    </td>
+  </tr>
+  <tr id="menu-dd">
+    <td style="display: show; padding-left: 1em" width="20%">
+      <div class="dropdown">
+        <button id="vehicle_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Vehicle
+        <span class="caret"></span></button>
+        <ul id="filter_dest" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Vehicle</li>
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">MAX</a></li>
+            <li><a href="#">Bus</a></li>
+            <li><a href="#">WES</a></li>
+        </ul>
+      </div>
+    </td>
+    <td class="direction_cls" style="padding-left: 4em; padding-right: 1em" width="25%">
+      <div class="btn-group">
+        <button id="dir_btn" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Direction    
+        <span class="caret"></span>
+        </button>
+        <ul id="filter_dir" class="dropdown-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Direction</li>
+          <li role="presentation"><a href="#">All</a></li>
+          <li role="presentation" class="divider"></li>
+          <li><a href="#" id="inbound_link"></a></li>
+          <li><a href="#" id="outbound_link"></a></li>
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em" width="25%">
+      <div class="dropdown">
+        <button id="tod_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Time of Day
+        <span class="caret"></span></button>
+        <ul id="filter_tod" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Time of Day</li>
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">AM Peak</a></li>
+            <li><a href="#">Midday</a></li>
+            <li><a href="#">PM Peak</a></li>
+            <li><a href="#">Evening</a></li>
+        </ul>
+      </div>
+    </td>
+    <td style="padding-left: 4em; padding-right: 1em" width="30%">
+      <div class="dropdown">
+        <button id="satisfaction_btn" class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Satisfaction
+        <span class="caret"></span></button>
+        <ul id="filter_satisfaction" class="dropdown-menu scrollable-menu" role="menu">
+          <li role="presentation" class="dropdown-header">Satisfaction</li>
+          <li role="presentation" class="divider"></li>
+            <li><a href="#">All</a></li>
+            <li><a href="#">Satisfied</a></li>
+            <li><a href="#">Neutral</a></li>
+            <li><a href="#">Not satisfied</a></li>
+            <li><a href="#">Do not know</a></li>
+        </ul>
+      </div>
+    </td>
+  </tr>
+</table>
+</div>
+</div>
+
+<!--<div id="button-header">
+    <input type="button"  value="Hide" id="toggle">
+</div>-->
+
+<div id="satisfaction">
+  <table id="satisfaction-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Satisfaction</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="origin">
+  <table id="origin-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Origin Type</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="destination">
+  <table id="destination-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Destination Type</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="travelchange">
+  <table id="travelchange-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Travel Change</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="gasoline">
+  <table id="gasoline-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Gasoline Importance</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="ridership">
+  <table id="ridership-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Ridership</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="rideyears">
+  <table id="rideyears-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Ride Years</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="approval">
+  <table id="approval-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Job Approval</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="onechange">
+  <table id="onechange-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">One Change</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="age">
+  <table id="age-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Age</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="gender">
+  <table id="gender-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Gender</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="race">
+  <table id="race-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Race</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="transit">
+  <table id="transit-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Options</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="vehicle">
+  <table id="vehicle-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Availability</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="house">
+  <table id="house-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Household Size</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="vecount">
+  <table id="vecount-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Vehicle Count</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="income">
+  <table id="income-table" class="table table-bordered">
+    <tr>
+        <th class="text-center">Income</th>
+        <th class="text-center">Count</th>
+        <th class="text-center">Pct</th>
+    </tr>
+  </table>
+</div>
+
+
+<div id="line-chart" style="display:none">
+
+</div>
+
+<script>
+    var questions = {{questions|tojson|safe}};
+    var routes = {{routes|tojson|safe}};
+    var directions = {{ directions|tojson|safe }};
+    console.log(directions);
+    var base = '{{url_for('index')}}';
+</script>
+
+<script type="text/javascript" src="{{ url_for('index') }}static/js/results.js"></script>
 
 
 {% endblock %}
