@@ -264,3 +264,19 @@ th {
     margin: 0 0 5px;
     color: #777; 
 }
+
+#line-chart, #satisfaction, #origin, #destination, #travelchange, #gasoline, #ridership, #rideyears, #approval,
+#onechange, #age, #gender, #race, #disability, #transit, #vehicle, #house, #vecount, #income, #poverty
+{
+  max-width: 1000px;
+  width: 100%;
+  height: auto;
+  display: none;
+}
+
+
+#button-header {
+padding-left: 20px;
+padding-bottom: 10px;
+display: none; 
+}
