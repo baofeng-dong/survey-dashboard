@@ -36,6 +36,7 @@ def progress():
     return render_template("progress.html")
 
 @app.route('/results')
+@Auth.requires_auth
 def result():
     routes = Helper.get_routes()
     questions = Helper.get_questions()
