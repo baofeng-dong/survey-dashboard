@@ -47,7 +47,7 @@ class Helper(object):
             FROM odk.ques_lookup
             ORDER BY num;""")
 
-        ret_val = [ [question[0], question[1]] for question in questions ]
+        ret_val = [ [question[0], str(question[1])] for question in questions ]
         web_session.close()
         debug(ret_val)
         return ret_val
