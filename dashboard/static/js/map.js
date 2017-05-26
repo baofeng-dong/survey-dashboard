@@ -18,6 +18,7 @@
     var infoSep = L. control();
     var infoCty = L.control();
     var dict = {}; //percentage data dictionary
+    var dictCount = {}; //count data dictionary
 //dictionary for storing query params and values
     var sel_args = {
         rte : "",
