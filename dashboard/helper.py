@@ -558,7 +558,7 @@ class Helper(object):
         query_string += not_null
         query_string += limit
 
-        debug(query_string)
+        #debug(query_string)
 
         web_session = Session()
         query = web_session.execute(query_string)
