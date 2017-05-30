@@ -173,7 +173,7 @@ $('#filter_line a').on('click', function() {
         sel_args.rte = '';
         sel_args.dir = '';
     }
-    requestdata();
+    requestdata(sel_args);
 });
 //function for when direction for a route is selected
 $('#filter_dir a').on('click', function() {
@@ -189,7 +189,7 @@ $('#filter_dir a').on('click', function() {
     } 
     console.log(sel_dir);
     console.log(sel_args);
-    requestdata();
+    requestdata(sel_args);
 });
 
 
@@ -203,7 +203,7 @@ $('#filter_ques a').on('click', function() {
     sel_args.qnum = questionkey[sel_ques];
     console.log("qnum: " + qnum)
     $("#ques_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
@@ -219,7 +219,7 @@ $('#filter_day a').on('click', function() {
     sel_args.day = sel_day;
     }
     $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
@@ -235,7 +235,7 @@ $('#filter_vehicle a').on('click', function() {
     sel_args.vehicle = sel_vehicle;
     }
     $("#vehicle_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
@@ -250,7 +250,7 @@ $('#filter_travel a').on('click', function() {
     sel_args.travel = sel_travel;
     }
     $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
@@ -266,7 +266,7 @@ $('#filter_tod a').on('click', function() {
     sel_args.tod = sel_tod;
     }
     $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
@@ -282,12 +282,14 @@ $('#filter_satisfaction a').on('click', function() {
     sel_args.satis = sel_satisfaction;
     }
     $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
-    requestdata();
+    requestdata(sel_args);
 
 });
 
-function requestdata() {
-    $.getJSON('/results/_data', sel_args, function(data) {
+function requestdata(args) {
+    console.log(args);
+
+    $.getJSON('results/_data', args, function(data) {
         console.log(data);
         div_id_ln = "#line-chart"
         div_id = "#" + data.metadata.id
