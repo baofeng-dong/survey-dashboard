@@ -331,7 +331,7 @@ class Helper(object):
                 select *
                         from odk.fall_survey_2016_data f
                         where
-                            f.willing = '1' and
+                            f.willing in ('1','2') and
                             f.origin_zip is not null {0}),
                 zipcount as (
                         select origin_zip,
