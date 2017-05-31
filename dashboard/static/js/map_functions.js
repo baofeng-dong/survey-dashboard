@@ -3,6 +3,7 @@
 function addMapview () {
         //if point map selected
         if ($('input.checkview')[0].checked) {
+            removeLayers(mymap);
             rebuild(sel_args);
             if (sel_args.rte && sel_args.dir) {
                 rebuildPath(sel_args);
