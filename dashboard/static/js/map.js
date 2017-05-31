@@ -10,10 +10,10 @@
     var zipLayer = "zipcode_tm.geojson";
     var ctyLayer = "co_fill_tm.geojson";
     var boundary;
-    var sepLegend = L.control({position: 'bottomright'});
-    var zipLegend = L.control({position: 'bottomright'});
-    var pointLegend = L.control({position: 'bottomright'});
-    var ctyLegend = L.control({position: 'bottomright'});
+    var sepLegend = L.control({position: 'topleft'});
+    var zipLegend = L.control({position: 'topleft'});
+    var pointLegend = L.control({position: 'topright'});
+    var ctyLegend = L.control({position: 'topleft'});
     var infoZip = L. control(); //for storing info when mouseover
     var infoSep = L. control();
     var infoCty = L.control();
@@ -135,6 +135,8 @@ $(document).ready(function() {
     addBoundaryLayer(tmLayer);
 
     //add point legend on load
+    //pointLegend.setPosition('topright');
+    console.log(pointLegend);
     pointLegend.addTo(mymap);
 
     //set mapview checkbox for point map true
@@ -152,6 +154,7 @@ $(document).ready(function() {
                 removeLayers(mymap);
                 removeLegend();
                 addBoundaryLayer(tmLayer);
+                pointLegend.addTo(mymap);
                 rebuild(sel_args);
                 if (sel_args.rte && sel_args.dir) {
                     rebuildPath(sel_args);
@@ -163,6 +166,7 @@ $(document).ready(function() {
             } else if ($('input.checkview')[1].checked) {
                 resetLayers();
                 removeLayers(mymap);
+                removeLegend();
                 addBoundaryLayer(tmLayer);
                 buildHeatmap(sel_args, addOriginHeatMap, function(){});
                 if (sel_line && sel_dir !== null) {
@@ -173,6 +177,7 @@ $(document).ready(function() {
                 //clear and reset layers
                 resetLayers();
                 removeLayers(mymap);
+                removeLegend();
                 addBoundaryLayer(tmLayer);
                 buildHeatmap(sel_args, function(){}, addDestHeatMap);
                 console.log("dest heatmap added!");
@@ -273,6 +278,7 @@ $(document).ready(function() {
             sel_args.dir = '';
         }
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add mapview based on which checkbox is selected
         addMapview();
         //requestBoundaryData(sel_args, sepLayer, addBoundaryLayer);
@@ -296,6 +302,7 @@ $(document).ready(function() {
         console.log(sel_dir);
         console.log(sel_args);
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add map based on which mapview box is checked
         addMapview();
         //add route geojson based on rte and dir
@@ -309,6 +316,7 @@ $(document).ready(function() {
 
         $("#day_btn").text(this.text+' ').append('<span class="caret"></span>');
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
     });
@@ -324,6 +332,7 @@ $(document).ready(function() {
         $("#origin_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
         if (sel_line && sel_dir !== null) {
@@ -344,6 +353,7 @@ $(document).ready(function() {
         $("#dest_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
         if (sel_line && sel_dir !== null) {
@@ -365,6 +375,7 @@ $(document).ready(function() {
         $("#tod_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
     });
@@ -382,6 +393,7 @@ $(document).ready(function() {
         $("#travel_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
     });
@@ -399,6 +411,7 @@ $(document).ready(function() {
         $("#satisfaction_btn").text(this.text+' ').append('<span class="caret"></span>');
 
         resetLayers();
+        addBoundaryLayer(tmLayer);
         //add maps based on which mapview checkbox is checked
         addMapview();
     });
