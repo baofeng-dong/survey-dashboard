@@ -259,7 +259,8 @@ th {
 }
 
 #satisfaction, #origin, #destination, #travelchange, #gasoline, #ridership, #rideyears, #approval,
-#onechange, #age, #gender, #race, #disability, #transit, #vehicle, #house, #vecount, #income, #poverty
+#onechange, #age, #gender, #race, #disability, #transit, #vehicle, #house, #vecount, #income, 
+#poverty, #rideless
 {
   /*max-width: 1000px;*/
   margin-left: 20px;
