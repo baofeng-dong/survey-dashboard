@@ -128,9 +128,9 @@ class Helper(object):
     def get_satisfaction(where, qnum):
         ret_val = []
         where = where
-        bar_chart = pygal.Bar(print_values=True)
+        pie_chart = pygal.Pie(print_values=True)
     
-        bar_chart.title = 'Customer Satisfaction'
+        pie_chart.title = 'Customer Satisfaction'
         query_string = """
             WITH survey as (
                 select *
@@ -167,8 +167,8 @@ class Helper(object):
         ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
         debug(ret_val)
         for row in ret_val:
-            bar_chart.add(str(row[0]), int(row[1]))
-        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+            pie_chart.add(str(row[0]), float(row[2]))
+        pie_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
         web_session.close()
         return ret_val
 
@@ -304,6 +304,68 @@ class Helper(object):
                         order by pct desc)
 
                 select * from changecount;""".format(where)
+
+        debug(query_string)
+
+        web_session = Session()
+        query = web_session.execute(query_string)
+
+        # each record will be converted as json
+        # and sent back to page
+        ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
+        debug(ret_val)
+        for row in ret_val:
+            bar_chart.add(str(row[0]), int(row[1]))
+        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+        web_session.close()
+        return ret_val
+
+    @staticmethod
+    def get_travel_less(where, qnum):
+        ret_val = []
+        where = where
+        bar_chart = pygal.Bar(print_values=True)
+    
+        bar_chart.title = 'Reasons for Riding TriMet Less'
+        query_string = """
+            WITH survey as (
+                select *
+                        from odk.fall_survey_2016_data f
+                        where
+                            f.willing in ('1','2') and
+                            f.q8_ride_less is not null {0}),
+                unnest_element as (
+                        select unnest(string_to_array(q8_ride_less, ' ')) as element
+                        from survey),
+                ridechange as (
+                        select 
+                            case
+                                WHEN element = '1' THEN 'Gasoline prices low'
+                                WHEN element = '2' THEN 'Home changed'
+                                WHEN element = '3' THEN 'Work changed'
+                                WHEN element = '4' THEN 'School changed'
+                                WHEN element = '5' THEN 'Life changed'
+                                WHEN element = '6' THEN 'Telecommute more'
+                                WHEN element = '7' THEN 'Take ride hailing services'
+                                WHEN element = '8' THEN 'On time issues'
+                                WHEN element = '9' THEN 'Frequency not enough'
+                                WHEN element = '10' THEN 'Crowding issues'
+                                WHEN element = '11' THEN 'Span of service not enough'
+                                WHEN element = '12' THEN 'Fare prices too high'
+                                WHEN element = '13' THEN 'Drive instead'
+                                WHEN element = '14' THEN 'Bicycle instead'
+                                WHEN element = '15' THEN 'Walk instead'
+                                WHEN element = '16' THEN 'Other'
+                                WHEN element = '17' THEN 'Do not know'
+                                else                             ''
+                            end as ride_less,
+                        count(*) as count,
+                        round(100*count(*)/(select count(*) from unnest_element)::numeric,1) as pct
+                        from unnest_element
+                        group by element
+                        order by pct desc)
+
+                select * from ridechange;""".format(where)
 
         debug(query_string)
 

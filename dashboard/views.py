@@ -62,6 +62,8 @@ def request_query():
         response = Helper.get_destination(where=where,qnum=qnum)
     if qnum == 4:
         response = Helper.get_travel_change(where=where,qnum=qnum)
+    if qnum == 5:
+        response = Helper.get_travel_less(where=where,qnum=qnum)
 
     return jsonify(data=response, metadata=metadata[qnum])
 
