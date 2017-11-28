@@ -111,6 +111,7 @@ function reset(){
     $("#origin").hide();
     $("#destination").hide();
     $("#travelchange").hide();
+    $("#rideless").hide();
     $("#gasoline").hide();
     $("#ridership").hide();
     $("#rideyears").hide();
