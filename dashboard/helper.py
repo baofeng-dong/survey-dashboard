@@ -176,9 +176,9 @@ class Helper(object):
     def get_origin(where, qnum):
         ret_val = []
         where = where
-        bar_chart = pygal.Bar(print_values=True)
+        pie_chart = pygal.Pie(print_values=True)
     
-        bar_chart.title = 'Trip Origin Types'
+        pie_chart.title = 'Trip Origin Types'
         query_string = """
             WITH survey as (
                 select *
@@ -218,8 +218,8 @@ class Helper(object):
         ret_val = [[record[0], int(record[1]), float(record[2])] for record in query]
         debug(ret_val)
         for row in ret_val:
-            bar_chart.add(str(row[0]), int(row[1]))
-        bar_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
+            pie_chart.add(str(row[0]), float(row[2]))
+        pie_chart.render_to_file(os.path.join(DIRPATH, "static/image/{0}{1}.svg".format('q', qnum)))
         web_session.close()
         return ret_val
 
