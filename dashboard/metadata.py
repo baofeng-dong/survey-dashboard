@@ -16,38 +16,42 @@ metadata = {
         "id": "travelchange"
         },
     5: {
+        "headers": ["Ride Less", "Count", "Pct"],
+        "id": "rideless"
+        },
+    6: {
         "headers": ["Gasoline Importance", "Count", "Pct"],
         "id": "gasoline"
         },        
-    6: {
+    7: {
         "headers": ["Ridership", "Count", "Pct"],
         "id": "ridership"
         },
-    7: {
+    8: {
         "headers": ["Ride Years", "Count", "Pct"],
         "id": "rideyears"
         },
-    8: {
+    9: {
         "headers": ["Job Approval", "Count", "Pct"],
         "id": "approval"
         },
-    9: {
+    10: {
         "headers": ["One Change", "Count", "Pct"],
         "id": "onechange"
         },
-    10: {
+    11: {
         "headers": ["Age", "Count", "Pct"],
         "id": "age"
         },
-    11: {
+    12: {
         "headers": ["Gender", "Count", "Pct"],
         "id": "gender"
         },
-    12: {
+    13: {
         "headers": ["Household Size", "Count", "Pct"],
         "id": "house"
         },
-    13: {
+    14: {
         "headers": ["Income", "Count", "Pct"],
         "id": "income"
         }
